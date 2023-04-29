@@ -1,7 +1,7 @@
 import './App.css'
 import {Navigation, Footer} from "./assets/main"
 import {Hello} from "./assets/math"
-import {Test} from "./assets/gis"
+// import {Test} from "./assets/gis"
 
 
 
@@ -10,7 +10,7 @@ function App() {
     <>
       <Navigation/>
       <Hello/>
-      <Test/>
+      {/* <Test/> */}
       <Footer/>
 
     </>
