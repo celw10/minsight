@@ -2,6 +2,8 @@
 import MapView from "@arcgis/core/views/MapView";
 import Map from "@arcgis/core/Map";
 import esriConfig from "@arcgis/core/config";
+// Local imports
+import {LiveNlClaims} from "../test"
 
 export function initializeMap(ref: HTMLDivElement) {
   // configure API key
@@ -19,6 +21,9 @@ export function initializeMap(ref: HTMLDivElement) {
     center: [-57.6604, 53.1355], // Longitude, latitude
     zoom: 5 // Zoom level
   });
+
+  // add live claims to map
+  // map.add(LiveNlClaims, 0)
 
   return view;
 }
