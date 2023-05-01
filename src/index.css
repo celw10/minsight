@@ -2,8 +2,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* ArcGIS CSS */
-@import 'https://js.arcgis.com/4.26/@arcgis/core/assets/esri/themes/light/main.css';
 
 /* :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
