@@ -2,13 +2,13 @@
 import './App.css'
 // local import
 import {Main} from "./assets/main"
-import {LiveNlClaims} from "./assets/test"
+// import {LiveNlClaims} from "./assets/test"
 
 function App() {
   return(
     <>
       <Main/>
-      <LiveNlClaims/>
+      {/* <LiveNlClaims/> */}
     </>
 
   );
