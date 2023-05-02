@@ -1,4 +1,6 @@
-//logo import
+// Router import
+import { Link } from 'react-router-dom';
+// Image import
 import linkedin from "../../images/social/linkedin_icon2.png";
 import github from "../../images/social/github.png";
 import email from "../../images/social/email_icon.png";
@@ -6,11 +8,10 @@ import email from "../../images/social/email_icon.png";
 export const Navigation = () => {
     return(
         <nav className="flex items-center py-2 text-lg font-bold bg-[#A33FD6]">
-            <a href="" className="flex-auto pl-4 no-underline hover:text-xl">Home</a>
-            <a href="" className="flex-auto no-underline hover:text-xl">Data View</a>
-            <a href="" className="flex-auto no-underline hover:text-xl">Data Room</a>
-            <a href="" className="flex-auto no-underline hover:text-xl">Data Download</a>
-            <a href="" className="flex-auto no-underline hover:text-xl">Login/Signup</a>
+            <Link to='/' className='flex-auto pl-4 no-underline hover:text-xl'>Home</Link>
+            <Link to='/dataroom' className='flex-auto no-underline hover:text-xl'>Data Room</Link>
+            <Link to='/about' className='flex-auto no-underline hover:text-xl'>About</Link>
+            <Link to='/account' className='flex-auto no-underline hover:text-xl'>Account</Link>
         </nav>
     );
 }

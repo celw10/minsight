@@ -1,71 +1,131 @@
-// // React imports
-// import { useEffect } from "react";
-// // ArcGIS imports
-// import FeatureLayer from "@arcgis/core/layers/FeatureLayer"
-// // import { json } from "react-router-dom";
+// React imports
+import { Fragment } from 'react';
+// Router import
+import { Link } from 'react-router-dom';
+// API imports (headlessui & heroicons)
+import { Disclosure, Menu, Transition } from '@headlessui/react';
+// Local imports
+import logo from '../images/minsight/logo.png';
+import profile from '../images/personnel/cw_headshot.jpg';
 
-// // Pulling live data from GovNL ArcGIS Rest server (Departnment of Natural Resources: DNR)
-// // https://dnrmaps.gov.nl.ca/arcgis/rest/services/GeoAtlas/Mineral_Lands/MapServer
+/*
+Refactored from the "Simple dark with menu button on left" navbar example from the following link
+https://tailwindui.com/components/preview#component-10058606cac5398d7fa2c73b64089874
+*/
 
+const navigation = [
 
-// export function LiveNlClaims() {
+  { name: 'Home', to: '/', current: true },
+  { name: 'Data Room', to: 'dataroom', current: false },
+  { name: 'About', to: 'about', current: false },
+  { name: 'Account', to: 'account', current: false },
+] // I'm having trouble changing the current value in nav so I can update the page highlights
 
-//     // dynamic paramet for request concatenation to GeoAtlas REST server
-//     const geom: string = 'geometry=1110133.6740690994,5317107.545221473,1222954.4243231,5422590.360499603' + '&'
+function classNames(...classes: any[]) { // typescript for spread operator?
+  return classes.filter(Boolean).join(' ')
+}
 
-//     // statatic parameters for request concatentation to GeoAtlas REST server
-//     const base: string = 'https://dnrmaps.gov.nl.ca/arcgis/rest/services/GeoAtlas/Mineral_Lands/MapServer/'
-//     const id: string = '0' 
-//     const action: string = '/query?'
-//     const geomType: string = 'geometryType=esriGeometryEnvelope' + '&'
-//     const spatialRel: string = 'spatialRel=esriSpatialRelIntersects' + '&'
-//     const returnGeom: string = 'returnGeometry=true' + '&'
-//     const returnIdsOnly: string = 'returnIdsOnly=false' + '&'
-//     const returnCountOnly: string = 'returnCountOnly=false' + '&'
-//     const returnElevZ: string = 'returnZ=false' + '&'
-//     const returnElevM: string = 'returnM=false' + '&'
-//     const returnDistinct: string = 'returnDistinctValues=false' + '&'
-//     const outFmt: string = 'f=JSON'
+console.log(classNames)
 
-//     // concatenate the request
-//     const concatRequest: string = base + id + action + geom + geomType + spatialRel + returnGeom + returnIdsOnly + returnCountOnly + returnElevZ + returnElevM + returnDistinct + outFmt
-    
-//     useEffect(() => {
-//         fetch(concatRequest)
-//             .then((response) => response.json())
-//             .then(data => console.log(data));
-//     }, []);
-    
-//     // style rendering of mienral exploraiton claims
-//     const claimsRender: any = {
-//         type: "simple",
-//         symbol: {
-//             type: "simple-fill",
-//             color: "grey",
-//             outline: {
-//                 width: 1,
-//                 color: "black"
-//             }
-//         }
-//     };
+export function Navigation() {
+  return (
+    <Disclosure as="nav" className="bg-gray-800">
+      {() => (
+        <>
+          <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+            <div className="relative flex h-16 items-center justify-between">
+              <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+                
+                {/* Logo */}
+                <div className="flex flex-shrink-0 items-center">
+                  <img
+                    className="block h-8 w-auto lg:block"
+                    src={logo}
+                    alt="Minsight"
+                  />
+                </div>
 
-//     // popup lables when mineral exploration claims are clicked
-//     const popupClaims: any = {
-//         "title": "Mineral Exploration Claim",
-//         "content": "<b>Company: </b>{CLIENT_NAM}<br> <b>License Number: </b>{LICENSE_NB}<br> <b>Date Staked: </b>{STAKEDATE}<br> <b>Expiry Date: </b>{EXPIRYDATE}<br> <b>Expenditures: </b>{TOTAL_EXP}<br> " 
-//     };
+                {/* Web-app Navigation */}
+                <div className="hidden sm:ml-6 sm:block">
+                  <div className="flex space-x-4">
+                    {navigation.map((item) => (
+                      <Link
+                        key={item.name}
+                        to={item.to}
+                        className={classNames(
+                          item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                          'rounded-md px-3 py-2 text-sm font-medium'
+                        )}
+                        aria-current={item.current ? 'page' : undefined}
+                      >
+                        {item.name}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
 
-//     // Trying to construct a feature layer based on the data I am exporting sources:
-//     // https://developers.arcgis.com/javascript/latest/api-reference/esri-layers-FeatureLayer.html
-//     // https://dnrmaps.gov.nl.ca/arcgis/rest/services/GeoAtlas/Mineral_Lands/MapServer/0
-//     // Also checkout Generate Renderer ??
-//     const claims = new FeatureLayer({
-//         url: base + id,
-//         renderer: claimsRender,
-//         outFields: ["CLIENT_NAM","LICENSE_NB","STAKEDATE", "EXPIRYDATE", "TOTAL_EXP"],
-//         popupTemplate: popupClaims,
-//         opacity: 0.5
-//     });
-
-//     return claims
-// }
+            {/* Profile dropdown */}
+              <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                <Menu as="div" className="relative ml-3">
+                  <div>
+                    <Menu.Button className="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                      <span className="sr-only">Open user menu</span>
+                      <img
+                        className="h-8 w-8 rounded-full"
+                        src={profile}
+                        alt="Profile"
+                      />
+                    </Menu.Button>
+                  </div>
+                  <Transition
+                    as={Fragment}
+                    enter="transition ease-out duration-100"
+                    enterFrom="transform opacity-0 scale-95"
+                    enterTo="transform opacity-100 scale-100"
+                    leave="transition ease-in duration-75"
+                    leaveFrom="transform opacity-100 scale-100"
+                    leaveTo="transform opacity-0 scale-95"
+                  >
+                    <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <Menu.Item>
+                        {({ active }) => (
+                          <a
+                            href="#"
+                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                          >
+                            Your Profile
+                          </a>
+                        )}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <a
+                            href="#"
+                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                          >
+                            Settings
+                          </a>
+                        )}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <a
+                            href="#"
+                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                          >
+                            Sign out
+                          </a>
+                        )}
+                      </Menu.Item>
+                    </Menu.Items>
+                  </Transition>
+                </Menu>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </Disclosure>
+  )
+}
