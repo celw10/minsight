@@ -3,8 +3,8 @@ import MapView from "@arcgis/core/views/MapView";
 import Map from "@arcgis/core/Map";
 import esriConfig from "@arcgis/core/config";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer"
+import LayerList from "@arcgis/core/widgets/LayerList"
 // Local imports
-// import {LiveNlClaims} from "../test"
 
 export function initializeMap(ref: HTMLDivElement) {
   // configure API key
@@ -28,8 +28,13 @@ export function initializeMap(ref: HTMLDivElement) {
   ************************************/
 
   // add live claims to map
-  const base: string = 'https://dnrmaps.gov.nl.ca/arcgis/rest/services/GeoAtlas/Mineral_Lands/MapServer/'
-  const mapStakedClaims: string = '0' 
+  const base: string = 'https://dnrmaps.gov.nl.ca/arcgis/rest/services/GeoAtlas/Mineral_Lands/MapServer/';
+  const mapStakedClaims: string = '0';
+  // I could make an object here and add thorugh map()?
+  const historicalClaims: string = '2';
+  const mineralRightsCancelled: string = '3';
+  const noticesGazetted: string = '4';
+  const mineralTenure: string = '5';
 
   // style rendering of mienral exploraiton claims
   const claimsRender: any = {
@@ -62,12 +67,14 @@ export function initializeMap(ref: HTMLDivElement) {
   map.add(claims, 0)
 
   // There are 11 other layers I can add like this including
-  // 1) original boundaries
   // 2) Historical Claims
   // 3) Mineral Rights Cancelled
   // 4) Notices Gazetted
   // 5) Mineral Tenure
-  // 6) Six layers about quarries...
+
+  //Work in layer list and draw widget 
+  //https://developers.arcgis.com/javascript/latest/sample-code/widgets-layerlist/
+  //https://developers.arcgis.com/javascript/latest/sample-code/sketch-geometries/
 
   return view;
 }
