@@ -1,6 +1,6 @@
 // local import
 // import {Navigation, Footer} from "./menu"
-import {MapView} from "../esri/map";
+import {MapView} from "../assets/esri/map";
 
 export const DataRoom = () => {
     return (

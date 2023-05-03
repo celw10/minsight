@@ -2,7 +2,7 @@
 import { Fragment } from 'react';
 // Router import
 import { Link } from 'react-router-dom';
-// API imports (headlessui & heroicons)
+// API import
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 // Local imports
 import logo from '../../images/minsight/logo.png';

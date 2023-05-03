@@ -5,10 +5,10 @@ import { Routes, Route } from 'react-router-dom';
 // Local import
 import { Navigation } from './assets/components/Navigation';
 import { Footer } from './assets/components/Footer';
-import { Home } from './assets/components/Home';
-import { DataRoom } from "./assets/components/DataRoom";
-import { About } from './assets/components/About';
-import { Account } from './assets/components/Account';
+import { Home } from './pages/Home';
+import { DataRoom } from "./pages/DataRoom";
+import { About } from './pages/About';
+import { Account } from './pages/Account';
 
 //Render Nav and Footer in the app section once but with the correct styling
 function App() {

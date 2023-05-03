@@ -30,11 +30,11 @@ return (
             alt="Minsight Banner"
             className="absolute inset-0 -z-10 h-full w-full object-cover object-right md:object-center"
         />
-        <div className="m-5 max-w-auto px-6 backdrop-blur-sm">
+        <div className="m-5 max-w-auto p-10 rounded-lg backdrop-blur-sm">
             <div className="mx-auto max-w-3xl lg:mx-0">
-                <h2 className="mt-5 text-3xl font-bold leading-8 text-black">
-                    Avaliable data
-                </h2>
+                <h1 className="mt-5 text-4xl font-bold leading-8 text-black">
+                    Available in the Data Room
+                </h1>
                 <div className="mx-auto mt-5 max-w-2xl">
                     <dl className="mt-5 grid grid-cols-4 gap-4 ">
                         {fullDataBase.map((stat) => (
