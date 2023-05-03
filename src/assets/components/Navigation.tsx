@@ -5,8 +5,8 @@ import { Link } from 'react-router-dom';
 // API imports (headlessui & heroicons)
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 // Local imports
-import logo from '../images/minsight/logo.png';
-import profile from '../images/personnel/cw_headshot.jpg';
+import logo from '../../images/minsight/logo.png';
+import profile from '../../images/personnel/cw_headshot.jpg';
 
 /*
 Refactored from the "Simple dark with menu button on left" navbar example from the following link
@@ -56,6 +56,7 @@ export function Navigation() {
                           item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
                           'rounded-md px-3 py-2 text-sm font-medium'
                         )}
+                        // Unable to change current book vlaue so proper page is highlighted
                         aria-current={item.current ? 'page' : undefined}
                       >
                         {item.name}
@@ -65,7 +66,7 @@ export function Navigation() {
                 </div>
               </div>
 
-            {/* Profile dropdown */}
+            {/* Profile dropdown: Leave untouched for now */}
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                 <Menu as="div" className="relative ml-3">
                   <div>
@@ -90,6 +91,7 @@ export function Navigation() {
                     <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                       <Menu.Item>
                         {({ active }) => (
+                          // Need to change a tag to Link when linked page is avaliable?
                           <a
                             href="#"
                             className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
@@ -100,6 +102,7 @@ export function Navigation() {
                       </Menu.Item>
                       <Menu.Item>
                         {({ active }) => (
+                          // Need to change a tag to Link when linked page is avaliable?
                           <a
                             href="#"
                             className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
@@ -110,6 +113,7 @@ export function Navigation() {
                       </Menu.Item>
                       <Menu.Item>
                         {({ active }) => (
+                          // Need to change a tag to Link when linked page is avaliable?
                           <a
                             href="#"
                             className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}

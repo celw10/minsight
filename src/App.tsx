@@ -3,8 +3,8 @@ import './App.css';
 // Router import
 import { Routes, Route } from 'react-router-dom';
 // Local import
-import { Navigation } from './assets/test';
-import { Footer } from './assets/components/menu';
+import { Navigation } from './assets/components/Navigation';
+import { Footer } from './assets/components/Footer';
 import { Home } from './assets/components/Home';
 import { DataRoom } from "./assets/components/DataRoom";
 import { About } from './assets/components/About';

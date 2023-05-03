@@ -1,3 +1,8 @@
+// Import local
+import { AvailableData } from "./AvailableData";
+
 export const Home = () => {
-    return <div>Home Page</div>
+    return(
+        <AvailableData/>
+    );
 }
