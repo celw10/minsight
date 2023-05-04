@@ -25,8 +25,6 @@ function classNames(...classes: any[]) { // typescript for spread operator?
   return classes.filter(Boolean).join(' ')
 }
 
-console.log(classNames)
-
 export function Navigation() {
   return (
     <Disclosure as="nav" className="bg-gray-800">
