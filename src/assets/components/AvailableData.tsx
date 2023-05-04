@@ -1,5 +1,5 @@
 // Import images
-import banner from '../../images/minsight/banner.jpg';
+import banner from '../../images/minsight/BackgroundDesign.png';
 
 /*
 Refactored from the "With Stats" page header example from the following link

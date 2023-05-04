@@ -1,5 +1,5 @@
 // Image import
-import logo from '../images/minsight/logo.png';
+import logo from '../images/minsight/MinsightRockLogo.png';
 
 /*
   This example requires some changes to your config:

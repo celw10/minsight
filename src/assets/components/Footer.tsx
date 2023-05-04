@@ -1,7 +1,7 @@
 // API imports (headlessui & heroicons)
 import { Disclosure } from '@headlessui/react';
 // Image import
-import name from '../../images/minsight/name.png';
+import name from '../../images/minsight/MinsightWordLogo.png';
 import linkedin from "../../images/social/linkedin_icon2.png";
 import github from "../../images/social/github.png";
 import email from "../../images/social/email_icon.png";
@@ -21,7 +21,7 @@ export function Footer() {
               {/* Name Image */}
               <div className="flex flex-none">
                 <img
-                className="block h-8 w-auto lg:block" // Adjust when image is properly sized
+                className="block h-8 mr-2 w-auto lg:block" // Adjust when image is properly sized
                 src={name}
                 alt="Minsight"
                 />
