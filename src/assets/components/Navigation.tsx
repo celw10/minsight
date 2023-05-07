@@ -17,6 +17,7 @@ const navigation = [
 
   { name: 'Home', to: '/', current: true },
   { name: 'Data Room', to: 'dataroom', current: false },
+  { name: '3D Viewer', to: 'threed', current: false },
   { name: 'About', to: 'about', current: false },
   { name: 'Account', to: 'account', current: false },
 ] // I'm having trouble changing the current value in nav so I can update the page highlights

@@ -96,9 +96,9 @@ export function initializeMap(ref: HTMLDivElement) {
 
   //NOTE: Times are formatted 2.5 hours earlier than they should be? 
 
-  //Work in layer list and draw widget 
-  //https://developers.arcgis.com/javascript/latest/sample-code/widgets-layerlist/
-  //https://developers.arcgis.com/javascript/latest/sample-code/sketch-geometries/
-
+  // MORE DATA TO IMPORT (Drill Core, Drill Holes, MODS)
+  // https://dnrmaps.gov.nl.ca/arcgis/rest/services/GeoAtlas/Map_Layers/MapServer
+  // DATA TO IMPORT (Geochemistry)
+  // https://dnrmaps.gov.nl.ca/arcgis/rest/services/GeoAtlas/Geochemistry_All/MapServer
   return view;
 }

@@ -7,6 +7,7 @@ import { Navigation } from './assets/components/Navigation';
 import { Footer } from './assets/components/Footer';
 import { Home } from './pages/Home';
 import { DataRoom } from "./pages/DataRoom";
+import { ThreeD } from './pages/ThreeD';
 import { About } from './pages/About';
 import { Account } from './pages/Account';
 
@@ -18,6 +19,7 @@ function App() {
       <Routes>
         <Route path='/' element={<Home/>} />
         <Route path='dataroom' element={<DataRoom/>} />
+        <Route path='threed' element={<ThreeD/>} />        
         <Route path='about' element={<About/>} />
         <Route path='account' element={<Account/>} />
         <Route />
