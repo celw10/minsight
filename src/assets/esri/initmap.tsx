@@ -1,13 +1,15 @@
+
 // ArcGIS imports
 import MapView from "@arcgis/core/views/MapView";
 import Map from "@arcgis/core/Map";
 import esriConfig from "@arcgis/core/config";
-import FeatureLayer from "@arcgis/core/layers/FeatureLayer"
-import LayerList from "@arcgis/core/widgets/LayerList"
-import Sketch from "@arcgis/core/widgets/Sketch"
-import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer"
+import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
+import LayerList from "@arcgis/core/widgets/LayerList";
+import Sketch from "@arcgis/core/widgets/Sketch";
+import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
 // Local imports
-import { popups } from './styling'
+import { popups } from './styling';
+import { ToggleSketch } from './styling';
 
 export function initializeMap(ref: HTMLDivElement) {
 
@@ -38,7 +40,7 @@ export function initializeMap(ref: HTMLDivElement) {
   // Add Widgets
   ************************************/
 
-  // add layer list to the UI
+  // add layer list to the UI - Add different widgets to the UI here based on mousebutton clicks?
   view.when(() => {
     const layerList = new LayerList({
       view: view
@@ -51,8 +53,14 @@ export function initializeMap(ref: HTMLDivElement) {
     //layerlist for item feature layer toggeling
     view.ui.add(layerList, "top-right");
     // sketch toolbar to draw shapefiles
-    view.ui.add(sketch, "bottom-right")
+    const adder: Boolean = false; // THIS IS WHAT I NEED TO DO 
+    if (adder) {
+      view.ui.add(sketch, "bottom-right")
+    }
   });
+
+  // toggle the sketch widget
+  <ToggleSketch view={view} graphicsLayer={graphicsLayer}/>
 
   //Able to directly generate data selection tools with SKETCH!
 

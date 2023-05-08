@@ -1,15 +1,17 @@
 // local import
-// import {Navigation, Footer} from "./menu"
-import {MapView} from "../assets/esri/map";
+import { MapView } from "../assets/esri/map";
+import { DataRoomAside } from "../assets/components/DataRoomAside"
+import { DataRoomNav } from "../assets/components/DataRoomNav"
+
 
 export const DataRoom = () => {
     return (
-        <div className="flex flex-col h-full w-full p-0 m-0"> 
-
-            <div className="flex-auto">
+        <div className="flex flex-col "> 
+            <DataRoomNav/>
+            <div className="flex h-screen flex-row">
+                <DataRoomAside/>
                 <MapView/>
             </div>
-
         </div>
     );
 }

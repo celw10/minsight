@@ -14,7 +14,6 @@ https://tailwindui.com/components/preview#component-10058606cac5398d7fa2c73b6408
 */
 
 const navigation = [
-
   { name: 'Home', to: '/', current: true },
   { name: 'Data Room', to: 'dataroom', current: false },
   { name: '3D Viewer', to: 'threed', current: false },
@@ -22,6 +21,7 @@ const navigation = [
   { name: 'Account', to: 'account', current: false },
 ] // I'm having trouble changing the current value in nav so I can update the page highlights
 
+// This is for the drop down user menu
 function classNames(...classes: any[]) { // typescript for spread operator?
   return classes.filter(Boolean).join(' ')
 }

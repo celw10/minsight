@@ -1,3 +1,8 @@
+// React imports 
+import { useState } from "react"
+// ArcGIS imports
+import Sketch from "@arcgis/core/widgets/Sketch";
+
 /************************************ 
  // NL Mineral Lands Data
 ************************************/
@@ -30,3 +35,49 @@ const tenurePopup: any = {
 
 // export popup styling
 export const popups = [claimsPopup, historicalClaimsPopup, cancelledPopup, gazettedPopup, tenurePopup]
+
+// toggle widget visibilities 
+export function ToggleSketch(view: any, graphicsLayer: any) {
+    
+
+    return (
+        <>
+            {
+            view.when(() => {
+                const draw = new Sketch({
+                layer: graphicsLayer,
+                view: view,
+                creationMode: "update",
+                });
+                view.ui.add(draw, "bottom-right")
+            })
+            }
+        </>
+    );
+}
+
+// // toggle widget visibilities 
+// export function ToggleSketch(view: any, graphicsLayer: any) {
+//     // initalize state
+//     const [sketch, setSketch] = useState(true);
+    
+//     const changeState = () => {
+//         setSketch(!setSketch);
+//     };
+//     // toggle state
+//     changeState
+//     // render accordingly
+//     if (sketch) {
+//         console.log("HERE")
+
+//         view.when(() => {
+//             const draw = new Sketch({
+//             layer: graphicsLayer,
+//             view: view,
+//             creationMode: "update",
+//             });
+//             view.ui.add(draw, "bottom-right")
+//         });
+//     }
+//     return <></>
+// }

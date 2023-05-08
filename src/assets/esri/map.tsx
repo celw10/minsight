@@ -14,5 +14,5 @@ export const MapView = (args: any) => {
         setView(view);
     }, []); //only after first render of div(?)
 
-    return <div className='h-full w-full p-0 m-0' ref={mapRef}></div>;
+    return <div className='h-screen w-screen p-0 m-0' ref={mapRef}></div>;
 }
