@@ -1,36 +1,39 @@
 // React imports
-import { Fragment } from 'react';
+import { Fragment, useState } from 'react';
 // API import
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 // Local import
-import { ToggleSketch } from '../esri/styling';
-
-
-// menu object 
-type toolList = {
-    id: number;
-    name: string; 
-    fields: Array<string>;
-    operator: Array<any>;
-}
-const toolList = [
-    {id: 0, name: "Widgets", fields: ["sketch", "zoom", "view"], operator: ["sketch", "zoom", "view"]},
-    {id: 1, name: "Analysis", fields: ["Plot", "Table"], operator: ["Plot", "Table"]},
-    {id: 2, name: "Perspective", fields: ["2D", "3D"], operator: ["2D", "3D"]},
-]
+import { toolList } from '../esri/styling';
 
 // funciton to map variably sized objects to menu items
-function populateToolList(fields: Array<string>, operator: Array<any>) {
+function populateToolList(fields: Array<string>, toggleWidget: Function, tools: Array<string>) {
+    
+    // useRef & useEffect hooks to ensure DOM loads
+    // let buttonRef = useRef(null) as any;
+
+    // initiate array to form drop down menu
     const items: Array<any> = [];
+
     for (let i: number = 0; i < fields.length; i++) {
+        let index: number = tools.indexOf(fields[i]);
+        // let buttonValue: number = + widget[index]; // unary + operator converts Boolean to 0/1 number
+        // buttonRef = index
         items.push(
-        <Menu.Item key={i}>
+        <Menu.Item as='div' key={i}>
             {({ active }) => (
-            // This is going to have to be linked to JS that adds the menu widget
+            // button to toggle ArcGIS widgets
             <button
-                onClick={(event: any) => {
-                    <ToggleSketch/> //console.log(operator[i])
-                }} // i need a mousebutton click funciton here to enable the action
+                // ref={buttonRef}
+                // id={fields[index]+"Button"}
+                // value={buttonValue} // I should have the truthy/falsey as button value, now I can grab this from the DOM???
+                onClick={() => {
+                    toggleWidget(index)
+                    // toggle truth/false
+                    // let toggle: Array<Boolean> = toggleWidget(index)
+                    // unary + operator coverting boolean to 0/1 
+                    // buttonValue = + toggle[index]                 
+                }} 
+                // style button based on active
                 className={classNames(active ? 'bg-gray-100' : '', 'w-full block px-4 py-2 text-sm text-gray-700')}
             >
                 {fields[i]}
@@ -47,7 +50,26 @@ function classNames(...classes: any[]) { // typescript for spread operator?
     return classes.filter(Boolean).join(' ')
 }
 
-export function DataRoomNav() {
+export function DataRoomNav(props: any) {
+    // reference array and toolItems length
+    let count: number = 0;
+    let tools: Array<string> = [];
+    for (let i: number = 0; i < toolList.length; i++) {
+        count += toolList[i].fields.length
+        tools.push(...toolList[i].fields)
+    }
+
+    // initalize state with array of false
+    const [widget, setWidget] = useState(Array(count).fill(false)); 
+
+    // toggle boolean value in stateful array
+    function toggleWidget(j: number) {
+        widget[j] = !widget[j];
+        setWidget(widget);
+    }
+
+    props.func(widget)
+
     return (
         <Disclosure as="nav" className="bg-black">
             <div className="mx-auto w-full px-2 sm:px-6 lg:px-8">
@@ -56,7 +78,7 @@ export function DataRoomNav() {
                         {/* Key warning starts here */}
                         <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                             {toolList.map((tool) => (
-                                <Menu key={tool.id} as="div" className="relative ml-3">
+                                <Menu key={tool.id} as="div" className="relative ml-3 z-auto">
                                     <div>
                                         <Menu.Button className="flex rounded-md bg-gray-800 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                                             <div className='text-white px-3 py-2 text-sm font-medium'> {tool.name} </div>
@@ -72,7 +94,8 @@ export function DataRoomNav() {
                                         leaveTo="transform opacity-0 scale-95"
                                     >
                                         <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                            {populateToolList(tool.fields, tool.operator)}
+                                            {/* <PopulateToolList fields={tool.fields} toggleWidget={toggleWidget} tools={tools} porps={pull_data}/> */}
+                                            {populateToolList(tool.fields, toggleWidget, tools)}
                                         </Menu.Items>
                                     </Transition>
                                 </Menu>
