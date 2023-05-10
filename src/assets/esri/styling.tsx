@@ -1,6 +1,3 @@
-// React imports 
-import { useState } from "react"
-
 /************************************ 
  // NL Mineral Lands Data
 ************************************/

@@ -1,40 +1,30 @@
 // React imports
-import { Fragment, useState } from 'react';
+import { Fragment } from 'react';
 // API import
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 // Local import
 import { toolList } from '../esri/styling';
 
 // funciton to map variably sized objects to menu items
-function populateToolList(fields: Array<string>, toggleWidget: Function, tools: Array<string>) {
+function populateToolList(fields: Array<string>, toggle: Function, tools: Array<string>, active: Array<Boolean>) {
     
-    // useRef & useEffect hooks to ensure DOM loads
-    // let buttonRef = useRef(null) as any;
-
     // initiate array to form drop down menu
     const items: Array<any> = [];
 
+    // loop through fields in each nav tools butotn
     for (let i: number = 0; i < fields.length; i++) {
         let index: number = tools.indexOf(fields[i]);
-        // let buttonValue: number = + widget[index]; // unary + operator converts Boolean to 0/1 number
-        // buttonRef = index
         items.push(
         <Menu.Item as='div' key={i}>
-            {({ active }) => (
+            {() => (
             // button to toggle ArcGIS widgets
             <button
-                // ref={buttonRef}
-                // id={fields[index]+"Button"}
-                // value={buttonValue} // I should have the truthy/falsey as button value, now I can grab this from the DOM???
                 onClick={() => {
-                    toggleWidget(index)
-                    // toggle truth/false
-                    // let toggle: Array<Boolean> = toggleWidget(index)
-                    // unary + operator coverting boolean to 0/1 
-                    // buttonValue = + toggle[index]                 
+                    // update props
+                    toggle(index)               
                 }} 
                 // style button based on active
-                className={classNames(active ? 'bg-gray-100' : '', 'w-full block px-4 py-2 text-sm text-gray-700')}
+                className={classNames(active[index] ? 'bg-gray-100' : '', 'w-full block px-4 py-2 text-sm text-gray-700')}
             >
                 {fields[i]}
             </button>
@@ -51,7 +41,8 @@ function classNames(...classes: any[]) { // typescript for spread operator?
 }
 
 export function DataRoomNav(props: any) {
-    // reference array and toolItems length
+    
+    // reference tools array with all nav tool options
     let count: number = 0;
     let tools: Array<string> = [];
     for (let i: number = 0; i < toolList.length; i++) {
@@ -59,16 +50,33 @@ export function DataRoomNav(props: any) {
         tools.push(...toolList[i].fields)
     }
 
-    // initalize state with array of false
-    const [widget, setWidget] = useState(Array(count).fill(false)); 
+    // // initalize state with array of false
+    // const [widget, setWidget] = useState(Array(count).fill(false)); 
+
+    // // toggle boolean value in stateful array
+    // function toggleWidget(j: number) {
+    //     widget[j] = !widget[j];
+    //     setWidget(widget);
+    //     return widget
+    // }
+
+    // // extract widget state for parent
+    // useEffect(() => {
+    //     props.func(widget)
+    //     console.log(widget)
+    // }, []);
+    
+    // console.log(props.props)
 
     // toggle boolean value in stateful array
-    function toggleWidget(j: number) {
-        widget[j] = !widget[j];
-        setWidget(widget);
+    function toggle(j: number) {
+        // define widget array of previous state
+        let widget: Array<Boolean> = props.props
+        // update state of clicked index 
+        widget[j] = !widget[j]
+        // update props
+        props.setValue(widget);
     }
-
-    props.func(widget)
 
     return (
         <Disclosure as="nav" className="bg-black">
@@ -95,7 +103,7 @@ export function DataRoomNav(props: any) {
                                     >
                                         <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                             {/* <PopulateToolList fields={tool.fields} toggleWidget={toggleWidget} tools={tools} porps={pull_data}/> */}
-                                            {populateToolList(tool.fields, toggleWidget, tools)}
+                                            {populateToolList(tool.fields, toggle, tools, props.props)}
                                         </Menu.Items>
                                     </Transition>
                                 </Menu>

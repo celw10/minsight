@@ -9,8 +9,6 @@ import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
 // Local imports
 import { popups } from './styling';
 
-
-
 export function initializeMap(ref: HTMLDivElement, widgets: any) { //, toggleSketch: Boolean
 
   // configure API key
@@ -53,9 +51,9 @@ export function initializeMap(ref: HTMLDivElement, widgets: any) { //, toggleSke
     //layerlist for item feature layer toggeling
     view.ui.add(layerList, "top-right");
     // sketch toolbar to draw shapefiles
-    // if (toggleSketch) {
-    //   view.ui.add(sketch, "bottom-right")
-    // }
+    if (widgets[0]===true) {
+      view.ui.add(sketch, "bottom-right")
+    }
   });
 
   //Able to directly generate data selection tools with SKETCH!

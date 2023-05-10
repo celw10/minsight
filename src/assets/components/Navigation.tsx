@@ -1,12 +1,11 @@
 // React imports
-import { Fragment } from 'react';
+// import { Fragment } from 'react'; - future implementation
 // Router import
 import { Link } from 'react-router-dom';
 // API import
-import { Disclosure, Menu, Transition } from '@headlessui/react';
+import { Disclosure } from '@headlessui/react'; // Menu, and Transition - future implementaiton
 // Local imports
 import logo from '../../images/minsight/MinsightRockLogo.png';
-import profile from '../../images/personnel/cw_headshot.jpg';
 
 /*
 Refactored from the "Simple dark with menu button on left" navbar example from the following link
@@ -18,11 +17,11 @@ const navigation = [
   { name: 'Data Room', to: 'dataroom', current: false },
   { name: '3D Viewer', to: 'threed', current: false },
   { name: 'About', to: 'about', current: false },
-  { name: 'Account', to: 'account', current: false },
-] // I'm having trouble changing the current value in nav so I can update the page highlights
+  // { name: 'Account', to: 'account', current: false }, - future implementation
+]
 
-// This is for the drop down user menu
-function classNames(...classes: any[]) { // typescript for spread operator?
+// function for mapping nav links to the nav bar
+function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(' ')
 }
 
@@ -65,7 +64,7 @@ export function Navigation() {
                 </div>
               </div>
 
-            {/* Profile dropdown: Leave untouched for now */}
+            {/* Profile section for Future Implementation 
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                 <Menu as="div" className="relative ml-3">
                   <div>
@@ -125,6 +124,7 @@ export function Navigation() {
                   </Transition>
                 </Menu>
               </div>
+              */}
             </div>
           </div>
         </>
