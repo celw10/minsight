@@ -7,8 +7,7 @@ import { Navigation } from './assets/components/Navigation';
 import { Footer } from './assets/components/Footer';
 import { Home } from './pages/Home';
 import { DataRoom } from "./pages/DataRoom";
-import { ThreeD } from './pages/ThreeD';
-import { About } from './pages/About';
+import { Feedback } from './pages/Feedback';
 // import { Account } from './pages/Account'; - future implementation
 
 //Render Nav and Footer in the app section once but with the correct styling
@@ -19,8 +18,7 @@ function App() {
       <Routes>
         <Route path='/' element={<Home/>} />
         <Route path='dataroom' element={<DataRoom/>} />
-        <Route path='threed' element={<ThreeD/>} />        
-        <Route path='about' element={<About/>} />
+        <Route path='contact' element={<Feedback/>} />
         {/* <Route path='account' element={<Account/>} /> - future implementaiton */}
       </Routes>
       <Footer />

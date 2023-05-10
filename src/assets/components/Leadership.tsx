@@ -7,13 +7,13 @@ const people = [
         name: 'Chris Williams',
         role: 'Co-Founder / CEO',
         imageUrl: chris,
-        bio: 'Chris has a BSc. and MSc. from MUN in Earth Sciences. He worked as a geoscientist in mineral exploration for two and a half years and is currently a student at Get Coding.', 
+        bio: 'Chris has a BSc. and MSc. from MUN in Earth Sciences. He worked as a geoscientist in mineral exploration for over two years and is currently a student at Get Coding.', 
     },
     {
         name: 'Brandon Randell',
         role: 'Co-Founder / COO',
         imageUrl: brandon,
-        bio: 'Brandon has a BSc in Earth Sciences and Education. He is working on an MBA at MUN and works as a Financial Advisor at TD.',
+        bio: 'Brandon has a BSc in Earth Sciences and Education. He is a current MBA student at MUN while working as a Financial Advisor at TD.',
     },
 ]
 
@@ -24,13 +24,12 @@ https://tailwindui.com/components/preview#component-10058606cac5398d7fa2c73b6408
 
 export function Leadership() {
     return (
-        <div className="bg-white py-24 sm:py-32">
+        <div className="py-24 sm:py-32">
         <div className="mx-auto grid max-w-7xl gap-x-8 gap-y-20 px-6 lg:px-8 xl:grid-cols-3">
             <div className="max-w-2xl">
-                <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Meet our leadership</h2>
+                <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Meet our founders</h2>
                 <p className="mt-6 text-lg leading-8 text-gray-600">
-                    Libero fames augue nisl porttitor nisi, quis. Id ac elit odio vitae elementum enim vitae ullamcorper
-                    suspendisse.
+                    Working hard to make historical mineral exploraiton data more accessable for all.
                 </p>
             </div>
             <ul role="list" className="grid gap-x-8 gap-y-12 sm:grid-cols-2 sm:gap-y-16 xl:col-span-2">

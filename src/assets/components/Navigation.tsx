@@ -1,7 +1,7 @@
 // React imports
 // import { Fragment } from 'react'; - future implementation
 // Router import
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 // API import
 import { Disclosure } from '@headlessui/react'; // Menu, and Transition - future implementaiton
 // Local imports
@@ -13,11 +13,10 @@ https://tailwindui.com/components/preview#component-10058606cac5398d7fa2c73b6408
 */
 
 const navigation = [
-  { name: 'Home', to: '/', current: true },
-  { name: 'Data Room', to: 'dataroom', current: false },
-  { name: '3D Viewer', to: 'threed', current: false },
-  { name: 'About', to: 'about', current: false },
-  // { name: 'Account', to: 'account', current: false }, - future implementation
+  { name: 'Home', to: '/'},
+  { name: 'Data Room', to: 'dataroom'},
+  { name: 'Contact', to: 'Contact'},
+  // { name: 'Account', to: 'account'}, - future implementation
 ]
 
 // function for mapping nav links to the nav bar
@@ -47,18 +46,16 @@ export function Navigation() {
                 <div className="hidden sm:ml-6 sm:block">
                   <div className="flex space-x-4">
                     {navigation.map((item) => (
-                      <Link
+                      <NavLink
                         key={item.name}
                         to={item.to}
-                        className={classNames(
-                          item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                          'rounded-md px-3 py-2 text-sm font-medium'
+                        className={({isActive}) => classNames(
+                          isActive ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                          'rounded-md px-3 py-2 text-sm font-medium' 
                         )}
-                        // Unable to change current book vlaue so proper page is highlighted
-                        aria-current={item.current ? 'page' : undefined}
                       >
                         {item.name}
-                      </Link>
+                      </NavLink>
                     ))}
                   </div>
                 </div>
