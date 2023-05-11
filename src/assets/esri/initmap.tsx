@@ -5,11 +5,12 @@ import esriConfig from "@arcgis/core/config";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 import LayerList from "@arcgis/core/widgets/LayerList";
 import Sketch from "@arcgis/core/widgets/Sketch";
+import BasemapToggle from "@arcgis/core/widgets/BasemapToggle";
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
 // Local imports
 import { popups } from './styling';
 
-export function initializeMap(ref: HTMLDivElement, widgets: any) { //, toggleSketch: Boolean
+export function initializeMap(ref: HTMLDivElement, widget: any) { //, toggleSketch: Boolean
 
   // configure API key
   esriConfig.apiKey = "AAPK9186db7ac712462f993ee74dbab2ea5alOWylmpxBi7cBhK6aozgfEB32gpqW0j48pmktA-Re0TWMR1mtLC0evuyqI_hAiSh"
@@ -40,21 +41,36 @@ export function initializeMap(ref: HTMLDivElement, widgets: any) { //, toggleSke
 
   // add layer list to the UI - Add different widgets to the UI here based on mousebutton clicks?
   view.when(() => {
+    // add list of layers widget with toggle option
     const layerList = new LayerList({
       view: view
     });
+    // add sketch widget
     const sketch = new Sketch({
       layer: graphicsLayer,
       view: view,
       creationMode: "update",
     });
-    //layerlist for item feature layer toggeling
+    // add basemap toggle widget
+    const toggle = new BasemapToggle({
+      view: view,
+      nextBasemap: 'topo-vector'
+    })
+
+    // add widgets to UI
+    view.ui.add(sketch, "bottom-right");
     view.ui.add(layerList, "top-right");
-    // sketch toolbar to draw shapefiles
-    if (widgets[0]===true) {
-      view.ui.add(sketch, "bottom-right")
-    }
-  });
+    view.ui.add(toggle, "bottom-left");
+
+    // remove widgets from UI
+    view.ui.remove(sketch);
+    view.ui.remove(layerList);
+    view.ui.remove(toggle);
+
+    });
+
+    // I need to control weter or not the ui is added or removed based on boolean array widget
+    console.log(widget)
 
   //Able to directly generate data selection tools with SKETCH!
 

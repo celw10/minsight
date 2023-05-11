@@ -1,33 +1,39 @@
 // React import 
-import { useState } from "react";
+import { createContext, useState } from "react";
 // Local import
-import { MapView } from "../assets/esri/map";
+import { MapView } from "../assets/esri/Map";
 import { DataRoomAside } from "../assets/components/DataRoomAside";
 import { DataRoomNav } from "../assets/components/DataRoomNav";
 import { toolList } from "../assets/esri/styling";
 
+// reference tools array with all nav tool options
+// Make this a function I use it twice!
+let count: number = 0;
+let tools: Array<string> = [];
+for (let i: number = 0; i < toolList.length; i++) {
+    count += toolList[i].fields.length
+    tools.push(...toolList[i].fields)
+}
+
+export const WidgetContext = createContext<any>(null);
 
 export const DataRoom = () => {
-    
-    // reference tools array with all nav tool options
-    let count: number = 0;
-    let tools: Array<string> = [];
-    for (let i: number = 0; i < toolList.length; i++) {
-        count += toolList[i].fields.length
-        tools.push(...toolList[i].fields)
-    }
 
-
-    const [value, setValue] = useState(Array(count).fill(false))
+    // initiate boolean array for nav tool toggling
+    const [widget, setWidget] = useState(Array(count).fill(false))
 
     return (
         <div className="flex flex-col"> 
             {/* <DataRoomNav func={pull_data}/> */}
-            <DataRoomNav setValue={setValue} props={value}/>
-            <div className="flex h-screen flex-row">
-                <DataRoomAside/>
-                <MapView props={value} />
-            </div>
+            <WidgetContext.Provider value={[widget, setWidget]}>
+                <DataRoomNav />
+                {/* In above: setValue={setValue} props={value} */}
+                <div className="flex h-screen flex-row">
+                    <DataRoomAside/>
+                        <MapView />
+                        {/* props={value} */}
+                </div>
+            </WidgetContext.Provider>
         </div>
     );
 

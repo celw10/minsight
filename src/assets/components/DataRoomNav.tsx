@@ -1,9 +1,10 @@
 // React imports
-import { Fragment } from 'react';
+import { Fragment, useContext } from 'react';
 // API import
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 // Local import
 import { toolList } from '../esri/styling';
+import { WidgetContext } from '../../pages/DataRoom'
 
 // funciton to map variably sized objects to menu items
 function populateToolList(fields: Array<string>, toggle: Function, tools: Array<string>, active: Array<Boolean>) {
@@ -40,7 +41,7 @@ function classNames(...classes: any[]) { // typescript for spread operator?
     return classes.filter(Boolean).join(' ')
 }
 
-export function DataRoomNav(props: any) {
+export function DataRoomNav() { //props: any
     
     // reference tools array with all nav tool options
     let count: number = 0;
@@ -50,32 +51,23 @@ export function DataRoomNav(props: any) {
         tools.push(...toolList[i].fields)
     }
 
-    // // initalize state with array of false
-    // const [widget, setWidget] = useState(Array(count).fill(false)); 
+    // get state defined in dataroom as context 
+    const [widget, setWidget] = useContext(WidgetContext); 
 
-    // // toggle boolean value in stateful array
-    // function toggleWidget(j: number) {
-    //     widget[j] = !widget[j];
-    //     setWidget(widget);
-    //     return widget
-    // }
-
-    // // extract widget state for parent
-    // useEffect(() => {
-    //     props.func(widget)
-    //     console.log(widget)
-    // }, []);
-    
-    // console.log(props.props)
 
     // toggle boolean value in stateful array
     function toggle(j: number) {
-        // define widget array of previous state
-        let widget: Array<Boolean> = props.props
-        // update state of clicked index 
-        widget[j] = !widget[j]
-        // update props
-        props.setValue(widget);
+        // // define widget array of previous state
+        // let widget: Array<Boolean> = props.props
+        // // update state of clicked index 
+        // widget[j] = !widget[j]
+        // // update props
+        // props.setValue(widget);
+        // initalize state with array of false
+        let updateWidget: Array<Boolean> = widget
+        updateWidget[j] = !widget[j]
+        setWidget(updateWidget)
+        // console.log(widget)
     }
 
     return (
@@ -102,8 +94,8 @@ export function DataRoomNav(props: any) {
                                         leaveTo="transform opacity-0 scale-95"
                                     >
                                         <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                            {/* <PopulateToolList fields={tool.fields} toggleWidget={toggleWidget} tools={tools} porps={pull_data}/> */}
-                                            {populateToolList(tool.fields, toggle, tools, props.props)}
+                                            {populateToolList(tool.fields, toggle, tools, widget)}
+                                            {/* {populateToolList(tool.fields, toggle, tools, props.props)} */}
                                         </Menu.Items>
                                     </Transition>
                                 </Menu>
