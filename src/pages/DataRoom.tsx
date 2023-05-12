@@ -19,8 +19,9 @@ export const WidgetContext = createContext<any>(null);
 
 export const DataRoom = () => {
 
-    // initiate boolean array for nav tool toggling
-    const [widget, setWidget] = useState(Array(count).fill(false))
+    // initiate boolean array for nav tool toggling - set initial view in 2D
+    const [widget, setWidget] = useState(Array(count).fill(false)
+                                .fill(true, tools.indexOf('2D'), tools.indexOf('2D')+1))
 
     return (
         <div className="flex flex-col"> 

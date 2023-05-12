@@ -2,6 +2,7 @@
 import { useRef, useEffect, useContext } from "react";
 // ArcGIS imports
 import View from "@arcgis/core/views/MapView";
+import Scene from "@arcgis/core/views/SceneView";
 // Local imports
 import { initializeMap } from "./initmap";
 import { WidgetContext } from '../../pages/DataRoom'
@@ -10,7 +11,9 @@ export const MapView = () => {
 
     // setup container div and map
     const containerRef = useRef() as any;
-    let mapView: View | null = null;
+
+    // mapView type 2D view or 3D scene, init as null
+    let mapView: View | Scene | null = null;
 
     // get state defined in dataroom as context 
     const [widget, setWidget] = useContext(WidgetContext); // This context is changing but NOT REACTIVE?
