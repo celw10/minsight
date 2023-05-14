@@ -8,21 +8,9 @@ import LayerList from "@arcgis/core/widgets/LayerList";
 import Sketch from "@arcgis/core/widgets/Sketch";
 import BasemapToggle from "@arcgis/core/widgets/BasemapToggle";
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
-import UniqueValueRenderer from "@arcgis/core/renderers/UniqueValueRenderer";
+import UniqueValueRenderer from "@arcgis/core/renderers/UniqueValueRenderer"; // render 2D features to 3D
 // Local imports
-import { popups } from './styling';
-
-// function to create 2D map or 3D scene
-function createView(params: any, type: string) {
-  let view;
-  if (type === "2d") {
-    view = new MapView(params);
-    return view;
-  } else {
-    view = new SceneView(params);
-  }
-  return view;
-}
+import { popups, toolList, toolItems } from './styling';
 
 // initalize ArcGIS map
 export function initializeMap(ref: HTMLDivElement, widget: any) { //, toggleSketch: Boolean
@@ -30,157 +18,100 @@ export function initializeMap(ref: HTMLDivElement, widget: any) { //, toggleSket
   // configure API key
   esriConfig.apiKey = "AAPK9186db7ac712462f993ee74dbab2ea5alOWylmpxBi7cBhK6aozgfEB32gpqW0j48pmktA-Re0TWMR1mtLC0evuyqI_hAiSh"
 
-  // configure for map (2D) or scene (3D) view
-  interface config {
-    mapView: any;
-    sceneView: any;
-    activeView: any; 
-    container: any;
-  }; // trying to be smart with config interface wasted a lot of time, just set to any
-  const configView: config = {
-    mapView: null,
-    sceneView: null, 
-    activeView: null,
-    container: ref,
-  };
-
-  // initial view configuraiton
-  const initViewParams = {
-    container: configView.container,
-    center: [-57.6604, 53.1355], // Longitude, latitude, center of NL
-    zoom: 5
-  }
-
-  // initalize 2D map
-  const map = new Map({
-    basemap: "arcgis-imagery" // default imagery
-  });
-
-  // initalize 3D scene
-  const scene = new Map({
-    basemap: "arcgis-imagery",
-    ground: "world-elevation"
-  });
-
-  // initalize API with 2D map view
-  configView.mapView = createView(initViewParams, "2d");
-  configView.mapView.map = map;
-  configView.activeView = configView.mapView;
-
-  // create 3D view, wont initalize until container is set
-  initViewParams.container = null;
-  // initViewParams.map = scene;
-  configView.sceneView = createView(initViewParams, "3d");
-
-  // reference a button to switch on/off 2D/3D?
-  // I have the boolean array from my toggle buttons. 
-  // this is the same issue as previuos, change this map view based on a change in button state???
-
-  // I have my "widget" array that will cahnge from true/false based on 2D/3D view
-  // Again, how do I render based on this change?
-
-  // funciton to switch 2D and 3D view // I need this function to be associated with a button
-  function switchView() {
-    const is3D = configView.activeView.type === '3d';
-
-    // remove reference to previous container
-    configView.activeView.container = null;
- 
-    if (is3D) {
-      const activeViewpoint = configView.activeView.viewpoint.clone();
-      configView.mapView.viewpoint = activeViewpoint;
-      configView.mapView.container = configView.container;
-      configView.activeView = configView.mapView;
-      // switch button reference
-    } else {
-      const activeViewpoint = configView.activeView.viewpoint.clone();
-      configView.sceneView.viewpoint = activeViewpoint;
-      configView.sceneView.container = configView.container;
-      configView.activeView = configView.sceneView;
-      // switchbutton reference
-    }
-  }
+  // define navigation menu utilities
+  const tools: Array<string> = toolItems(toolList)
 
   /************************************ 
-  // Setup Map (2D)
+  // Setup 2D or 3D Map and View
   ************************************/
 
-  // create from a web map
-  // const map = new Map({
-  //   basemap: "arcgis-imagery" // Basemap layer service
-  // });
-  
-  // initialize map view
-  const view = new MapView({
+  // initalize
+  interface config {
+    graphics: any;
+    mapView: any;
+    sceneView: any;
+  }; // tried to be smart with config interface wasted a lot of time, just set to any
+  const configArcGIS: config = {
+    graphics: null,
+    mapView: null,
+    sceneView: null, 
+  };
+
+  // 2D map
+  const map = new Map({
+    basemap: "arcgis-imagery" // Basemap layer service
+  });
+
+  // configure initial map view
+  configArcGIS.mapView = new MapView({
     container: ref,
     map: map,
     center: [-57.6604, 53.1355], // Longitude, latitude, center of NL
     zoom: 5 // Zoom level
   });
 
-  // add graphics layer for sketching
-  const graphicsLayer = new GraphicsLayer();
+  // graphics layer for sketches
+  configArcGIS.graphics = new GraphicsLayer();
 
-  /************************************ 
-  // Setup Scene (3D)
-  ************************************/
-
-  // const scene = new Map({
-  //   basemap: "arcgis-imagery",
-  //   ground: "world-elevation"
-  // });
-
-  const sceneView = new SceneView({
-    map: scene, 
-    camera: {
-      position: {
-        x: -52.7453, // St. John's
-        y: 47.5556,
-        z: 4000 // meters
+  // toggle to 3D perspective
+  if (widget[tools.indexOf('3D')] === true) { // lookup index dynamically
+    // 3D scene
+    const scene = new Map({
+      basemap: "arcgis-imagery",
+      ground: "world-elevation"
+    });
+  
+    // configure initial scene view
+    configArcGIS.sceneView = new SceneView({
+      map: scene, 
+      camera: {
+        position: {
+          x: -52.7453, // St. John's
+          y: 47.5556,
+          z: 4000 // meters
+        },
+        tilt: 75
       },
-      tilt: 75
-    },
-    container: ref
-  });
+      container: ref
+    });
+
+  }
 
   /************************************ 
   // Add Widgets
   ************************************/
 
   // add layer list to the UI - Add different widgets to the UI here based on mousebutton clicks?
-  view.when(() => {
-    // add list of layers widget with toggle option
-    const layerList = new LayerList({
-      view: view
-    });
+  configArcGIS.mapView.when(() => {    
     // add sketch widget
     const sketch = new Sketch({
-      layer: graphicsLayer,
-      view: view,
+      layer: configArcGIS.graphics,
+      view: configArcGIS.mapView,
       creationMode: "update",
+    });
+    // add list of layers widget with toggle option
+    const layerList = new LayerList({
+      view: configArcGIS.mapView
     });
     // add basemap toggle widget
     const toggle = new BasemapToggle({
-      view: view,
+      view: configArcGIS.mapView,
       nextBasemap: 'topo-vector'
     })
 
-    // add widgets to UI
-    view.ui.add(sketch, "bottom-right");
-    view.ui.add(layerList, "top-right");
-    view.ui.add(toggle, "bottom-left");
-
-    // remove widgets from UI
-    view.ui.remove(sketch);
-    view.ui.remove(layerList);
-    view.ui.remove(toggle);
-
-    });
-
-    // I need to control weter or not the ui is added or removed based on boolean array widget
-    console.log(widget)
-
-  //Able to directly generate data selection tools with SKETCH!
+    // toggle sketch widget to UI
+    if (widget[tools.indexOf('sketch')] === true) {
+      configArcGIS.mapView.ui.add(sketch, "bottom-right")
+    } 
+    // toggle layerList widget to UI
+    if (widget[tools.indexOf('layers')] === true) {
+      configArcGIS.mapView.ui.add(layerList, "top-right")
+    } 
+    // toggle sketch widget to UI
+    if (widget[tools.indexOf('basemap')] === true) {
+      configArcGIS.mapView.ui.add(toggle, "bottom-left")
+    } 
+  });
 
   /************************************ 
   // NL Live GeoAtlas Data
@@ -220,13 +151,13 @@ export function initializeMap(ref: HTMLDivElement, widget: any) { //, toggleSket
     map.add(govImport, item.id)
   });
 
-  // render 2D view layers for 3D scene
-  function render2DLayer() {
-    const render = new UniqueValueRenderer({
-      field: "MIRIAD.MIRIAD_LICENSES.CLIENT_NAME"
-    });
+  // // render 2D view layers for 3D scene
+  // function render2DLayer() {
+  //   const render = new UniqueValueRenderer({
+  //     field: "MIRIAD.MIRIAD_LICENSES.CLIENT_NAME"
+  //   });
 
-  }
+  // }
 
   //NOTE: Times are formatted 2.5 hours earlier than they should be? 
 
@@ -235,8 +166,15 @@ export function initializeMap(ref: HTMLDivElement, widget: any) { //, toggleSket
   // DATA TO IMPORT (Geochemistry)
   // https://dnrmaps.gov.nl.ca/arcgis/rest/services/GeoAtlas/Geochemistry_All/MapServer
 
+  // return appropate view
+  if (widget[tools.indexOf('2D')] === true) { // lookup index dynamically
+    return configArcGIS.mapView
+  } {
+    return configArcGIS.sceneView
+  }
+
   // return 2D View 
   // return view;
   // return 3D scene
-  return sceneView;
+  // return sceneView;
 }

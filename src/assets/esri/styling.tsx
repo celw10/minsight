@@ -31,6 +31,11 @@ const tenurePopup: any = {
 // export popup styling
 export const popups = [claimsPopup, historicalClaimsPopup, cancelledPopup, gazettedPopup, tenurePopup]
 
+
+/************************************ 
+ // Data Room Navigation Utilities
+************************************/
+
 // menu object, toggle ArcGIS widgets
 type toolList = {
     id: number;
@@ -38,7 +43,18 @@ type toolList = {
     fields: Array<string>;
 }
 export const toolList = [
-    {id: 0, name: "Widgets", fields: ["sketch", "zoom", "view"]},
-    {id: 1, name: "Analysis", fields: ["Plot", "Table"]},
+    {id: 0, name: "Widgets", fields: ["sketch", "layers", "basemap"]},
+    {id: 1, name: "Analysis", fields: ["Not", "Implemented"]},
     {id: 2, name: "Perspective", fields: ["2D", "3D"]},
 ]
+
+// return list of nav menu tools
+export function toolItems(toolList: Array<any>) {
+    let count: number = 0;
+    let tools: Array<string> = [];
+    for (let i: number = 0; i < toolList.length; i++) {
+        count += toolList[i].fields.length
+        tools.push(...toolList[i].fields)
+    }
+    return tools
+} 

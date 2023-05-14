@@ -3,7 +3,7 @@ import { Fragment, useContext } from 'react';
 // API import
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 // Local import
-import { toolList } from '../esri/styling';
+import { toolList, toolItems } from '../esri/styling';
 import { WidgetContext } from '../../pages/DataRoom'
 
 // funciton to map variably sized objects to menu items
@@ -22,7 +22,7 @@ function populateToolList(fields: Array<string>, toggle: Function, tools: Array<
             <button
                 onClick={() => {
                     // update props
-                    toggle(index)               
+                    toggle(tools, index)               
                 }} 
                 // style button based on active
                 className={classNames(active[index] ? 'bg-gray-100' : '', 'w-full block px-4 py-2 text-sm text-gray-700')}
@@ -44,30 +44,34 @@ function classNames(...classes: any[]) { // typescript for spread operator?
 export function DataRoomNav() { //props: any
     
     // reference tools array with all nav tool options
-    let count: number = 0;
-    let tools: Array<string> = [];
-    for (let i: number = 0; i < toolList.length; i++) {
-        count += toolList[i].fields.length
-        tools.push(...toolList[i].fields)
-    }
+    // let count: number = 0;
+    // let tools: Array<string> = [];
+    // for (let i: number = 0; i < toolList.length; i++) {
+    //     count += toolList[i].fields.length
+    //     tools.push(...toolList[i].fields)
+    // }
+    const tools: Array<string> = toolItems(toolList)
 
     // get state defined in dataroom as context 
     const [widget, setWidget] = useContext(WidgetContext); 
 
 
-    // toggle boolean value in stateful array
-    function toggle(j: number) {
-        // // define widget array of previous state
-        // let widget: Array<Boolean> = props.props
-        // // update state of clicked index 
-        // widget[j] = !widget[j]
-        // // update props
-        // props.setValue(widget);
-        // initalize state with array of false
-        let updateWidget: Array<Boolean> = widget
+    // toggle boolean value in stateful array - KEY STEP I NEED THESE UPDATES TO RE-RENDER MAP
+    function toggle(tools: Array<string>, j: number) {
+        // was missing .slice()
+        let updateWidget: Array<Boolean> = widget.slice()
+        // toggle index in boolean array
         updateWidget[j] = !widget[j]
+        // 2D and 3D perspective options cannot be toggled at the same time
+        if (tools[j] === '2D') {
+            let k: number = tools.indexOf('3D');
+            updateWidget[k] = false;
+        } else if (tools[j] === '3D') {
+            let k: number = tools.indexOf('2D');
+            updateWidget[k] = false;
+        }
+        // update state of widget
         setWidget(updateWidget)
-        // console.log(widget)
     }
 
     return (
