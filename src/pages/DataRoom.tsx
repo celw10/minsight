@@ -4,16 +4,10 @@ import { createContext, useState } from "react";
 import { MapView } from "../assets/esri/Map";
 import { DataRoomAside } from "../assets/components/DataRoomAside";
 import { DataRoomNav } from "../assets/components/DataRoomNav";
-import { toolList, toolItems } from "../assets/esri/styling";
+import { toolList } from "../assets/esri/utils";
 
-// reference tools array with all nav tool options
-// let count: number = 0;
-// let tools: Array<string> = [];
-// for (let i: number = 0; i < toolList.length; i++) {
-//     count += toolList[i].fields.length
-//     tools.push(...toolList[i].fields)
-// }
-const tools: Array<string> = toolItems(toolList)
+// flattened array of tool options
+const tools: Array<string> = toolList.map(({fields}) => fields).flat()
 
 
 export const WidgetContext = createContext<any>(null);
@@ -22,7 +16,8 @@ export const DataRoom = () => {
 
     // initiate boolean array for nav tool toggling - set initial view in 2D
     const [widget, setWidget] = useState(Array(tools.length).fill(false)
-                                .fill(true, tools.indexOf('2D'), tools.indexOf('2D')+1))
+                                .fill(true, tools.indexOf('2D'), tools.indexOf('2D') + 1) // default 2D view
+                                .fill(true, tools.indexOf('imagery'), tools.indexOf('imagery') + 1)) // default imagery basemap
 
     return (
         <div className="flex flex-col"> 
@@ -31,12 +26,11 @@ export const DataRoom = () => {
                 <DataRoomNav />
                 {/* In above: setValue={setValue} props={value} */}
                 <div className="flex h-screen flex-row">
-                    <DataRoomAside/>
+                    <DataRoomAside />
                         <MapView />
                         {/* props={value} */}
                 </div>
             </WidgetContext.Provider>
         </div>
     );
-
 }

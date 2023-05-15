@@ -3,36 +3,37 @@ import { Fragment, useContext } from 'react';
 // API import
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 // Local import
-import { toolList, toolItems } from '../esri/styling';
+import { toolList } from '../esri/utils';
 import { WidgetContext } from '../../pages/DataRoom'
 
 // funciton to map variably sized objects to menu items
 function populateToolList(fields: Array<string>, toggle: Function, tools: Array<string>, active: Array<Boolean>) {
-    
+
     // initiate array to form drop down menu
     const items: Array<any> = [];
 
-    // loop through fields in each nav tools butotn
-    for (let i: number = 0; i < fields.length; i++) {
-        let index: number = tools.indexOf(fields[i]);
+    // map fields to array of menu items
+    fields.map((field) => (
         items.push(
-        <Menu.Item as='div' key={i}>
-            {() => (
-            // button to toggle ArcGIS widgets
-            <button
-                onClick={() => {
-                    // update props
-                    toggle(tools, index)               
-                }} 
-                // style button based on active
-                className={classNames(active[index] ? 'bg-gray-100' : '', 'w-full block px-4 py-2 text-sm text-gray-700')}
-            >
-                {fields[i]}
-            </button>
-            )}
-        </Menu.Item>
-        )
-    }
+            <Menu.Item as='div' key={tools.indexOf(field)}>
+                {() => (
+                // button to toggle ArcGIS widgets
+                <button
+                    onClick={() => {
+                        // update props
+                        toggle(tools, tools.indexOf(field), fields)               
+                    }} 
+                    // style button based on active
+                    className={classNames(active[tools.indexOf(field)] ? 'bg-gray-100' : '', 'w-full block px-4 py-2 text-sm text-gray-700')}
+                >
+                    {field}
+                </button>
+                )}
+            </Menu.Item>
+            )
+    ));
+
+    // return individual drop down menu
     return <Menu.Items>{items}</Menu.Items>
 }
 
@@ -43,33 +44,27 @@ function classNames(...classes: any[]) { // typescript for spread operator?
 
 export function DataRoomNav() { //props: any
     
-    // reference tools array with all nav tool options
-    // let count: number = 0;
-    // let tools: Array<string> = [];
-    // for (let i: number = 0; i < toolList.length; i++) {
-    //     count += toolList[i].fields.length
-    //     tools.push(...toolList[i].fields)
-    // }
-    const tools: Array<string> = toolItems(toolList)
+    //flattened array of tool options
+    const tools: Array<string> = toolList.map(({fields}) => fields).flat()
 
     // get state defined in dataroom as context 
     const [widget, setWidget] = useContext(WidgetContext); 
 
+    // toggle boolean value in stateful array 
+    function toggle(tools: Array<string>, j: number, menu: string[]) {
 
-    // toggle boolean value in stateful array - KEY STEP I NEED THESE UPDATES TO RE-RENDER MAP
-    function toggle(tools: Array<string>, j: number) {
-        // was missing .slice()
+        // create mutable object from widget
         let updateWidget: Array<Boolean> = widget.slice()
+
+        // set boolean array to false for other fields in menu item - ONLY ONE ACTIVE WIDGET PER MENU
+        // implemented in for loop, this can be a one liner?
+        for (let i: number = tools.indexOf(menu[0]); i < tools.indexOf(menu[menu.length - 1]) + 1; i ++) {
+            updateWidget[i] = false
+        }
+
         // toggle index in boolean array
         updateWidget[j] = !widget[j]
-        // 2D and 3D perspective options cannot be toggled at the same time
-        if (tools[j] === '2D') {
-            let k: number = tools.indexOf('3D');
-            updateWidget[k] = false;
-        } else if (tools[j] === '3D') {
-            let k: number = tools.indexOf('2D');
-            updateWidget[k] = false;
-        }
+
         // update state of widget
         setWidget(updateWidget)
     }

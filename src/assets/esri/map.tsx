@@ -10,7 +10,7 @@ import { WidgetContext } from '../../pages/DataRoom'
 export const MapView = () => {
 
     // setup container div and map
-    const containerRef = useRef() as any;
+    const containerRef = useRef<HTMLDivElement>(null!);
 
     // mapView type 2D view or 3D scene, init as null
     let mapView: View | Scene | null = null;
@@ -23,9 +23,7 @@ export const MapView = () => {
             // initalize ArcGIS API
             mapView = initializeMap(containerRef.current, widget)
         }
-    }, [widget]); // widget is a dependancy as it change this boolean array with mousebutton clicks in DataRoom nav
-    // However, the map is not re-rendering when widget is changed to redraw the map with toggled ArcGIS widgets, why?
-    // how can I update the rendering of map 
+    }, [widget]); // widget as a dependancy for re-rendering
 
     return <div className='h-screen w-screen p-0 m-0' ref={containerRef}></div>;
 }

@@ -1,7 +1,7 @@
 // ArcGIS imports
 import esriRequest from '@arcgis/core/request'
 // Local imports
-import { popups } from '../esri/styling'
+import { popups } from '../esri/utils'
 
 // base path to GovNL GeoAtlas REST server
 const base: string = 'https://dnrmaps.gov.nl.ca/arcgis/rest/services/GeoAtlas/Mineral_Lands/MapServer/';

@@ -1,16 +1,37 @@
 // ArcGIS imports
+import esriConfig from "@arcgis/core/config";
+import Map from "@arcgis/core/Map";
 import MapView from "@arcgis/core/views/MapView";
 import SceneView from "@arcgis/core/views/SceneView";
-import Map from "@arcgis/core/Map";
-import esriConfig from "@arcgis/core/config";
-import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
-import LayerList from "@arcgis/core/widgets/LayerList";
-import Sketch from "@arcgis/core/widgets/Sketch";
-import BasemapToggle from "@arcgis/core/widgets/BasemapToggle";
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
-import UniqueValueRenderer from "@arcgis/core/renderers/UniqueValueRenderer"; // render 2D features to 3D
+import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
+// ArcGIS widgets
+import CoordinateConversion from '@arcgis/core/widgets/CoordinateConversion';
+import ElevationProfile from '@arcgis/core/widgets/ElevationProfile';
+// import Expand from '@arcgis/core/widgets/Expand';
+import LayerList from "@arcgis/core/widgets/LayerList";
+import Print from "@arcgis/core/widgets/Print";
+import Sketch from "@arcgis/core/widgets/Sketch";
+// import Swipe from "@arcgis/core/widgets/Swipe";
 // Local imports
-import { popups, toolList, toolItems } from './styling';
+import { toolList } from './utils';
+
+// popup labels for cureent live mineral exploration claims
+const claims = {
+  "title": "Mineral Exploration Claim",
+  "content": "<b>Company: </b>{MIRIAD.MIRIAD_LICENSES.CLIENT_NAME}<br> <b>License Number: </b>{MIRIAD.MIRIAD_LICENSES.LICENSE_NBR}<br> <b>Date Staked: </b>{MIRIAD.MIRIAD_LICENSES.STAKEDATE}<br>"  
+};
+const gazetted = {
+  "title": "Notices Gazetted",
+  "content": "<b>License Number: </b>{LICENSE_NBR}<br> <b>Available: </b>{ENDDATE}<br>"  
+};
+const tenure = {
+  "title": "Mineral Tenure",
+  "content": "<b>Company: </b>{COMPANY_NAME}<br> <b>Tenure Name: </b>{FEATURENAME}<br> <b>Mineral Tenure Type: </b>{TYPEDESC}<br>"  
+};
+
+// basemap options - linked to utils.tsx
+const basemaps: string[] = ["arcgis-imagery", "arcgis-terrain", "arcgis-topographic", "arcgis-oceans", "arcgis-light-gray", "arcgis-hillshade-light"]
 
 // initalize ArcGIS map
 export function initializeMap(ref: HTMLDivElement, widget: any) { //, toggleSketch: Boolean
@@ -18,14 +39,17 @@ export function initializeMap(ref: HTMLDivElement, widget: any) { //, toggleSket
   // configure API key
   esriConfig.apiKey = "AAPK9186db7ac712462f993ee74dbab2ea5alOWylmpxBi7cBhK6aozgfEB32gpqW0j48pmktA-Re0TWMR1mtLC0evuyqI_hAiSh"
 
-  // define navigation menu utilities
-  const tools: Array<string> = toolItems(toolList)
-
   /************************************ 
-  // Setup 2D or 3D Map and View
+  // Setup 2D/3D Map and Basemap
   ************************************/
 
-  // initalize
+  // define navigation menu utilities
+  const tools: Array<string> = toolList.map(({fields}) => fields).flat()
+
+  // user-selected basemap, first true in state starting at basemap index
+  const basemapIndex: number = widget.indexOf(true, tools.indexOf('imagery')) - tools.indexOf('imagery')
+
+  // initalize - not sure how to interface without any, TS inferring type nulls if I don't set to any. 
   interface config {
     graphics: any;
     mapView: any;
@@ -39,7 +63,8 @@ export function initializeMap(ref: HTMLDivElement, widget: any) { //, toggleSket
 
   // 2D map
   const map = new Map({
-    basemap: "arcgis-imagery" // Basemap layer service
+    basemap: basemaps[basemapIndex],
+    ground: "world-elevation"
   });
 
   // configure initial map view
@@ -54,10 +79,10 @@ export function initializeMap(ref: HTMLDivElement, widget: any) { //, toggleSket
   configArcGIS.graphics = new GraphicsLayer();
 
   // toggle to 3D perspective
-  if (widget[tools.indexOf('3D')] === true) { // lookup index dynamically
+  if (widget[tools.indexOf('3D')]) {
     // 3D scene
     const scene = new Map({
-      basemap: "arcgis-imagery",
+      basemap: basemaps[basemapIndex],
       ground: "world-elevation"
     });
   
@@ -78,10 +103,13 @@ export function initializeMap(ref: HTMLDivElement, widget: any) { //, toggleSket
   }
 
   /************************************ 
-  // Add Widgets
+  // Customizable Utilities - only in 2D for now
   ************************************/
 
-  // add layer list to the UI - Add different widgets to the UI here based on mousebutton clicks?
+  // define utility render location
+  const utilLocation = 'top-right'
+
+  // initialize widget configuration
   configArcGIS.mapView.when(() => {    
     // add sketch widget
     const sketch = new Sketch({
@@ -89,39 +117,70 @@ export function initializeMap(ref: HTMLDivElement, widget: any) { //, toggleSket
       view: configArcGIS.mapView,
       creationMode: "update",
     });
+    // add coordinate conversion widget
+    const coordinateConversion = new CoordinateConversion({
+      view: configArcGIS.mapView,
+    });
+    // add elevation profile widget
+    const elevationProfile = new ElevationProfile({
+      view: configArcGIS.mapView, 
+      profiles: [{type: "ground"}],
+      visibleElements: {selectButton: false}
+    });
+    // add printing or map export option
+    const print = new Print({
+      view: configArcGIS.mapView,
+      printServiceUrl: "https://utility.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task"
+    });
+
+    // toggle sketch widget on UI
+    if (widget[tools.indexOf('sketch')]) {
+      configArcGIS.mapView.ui.add(sketch, utilLocation)
+    }
+    // toggle coordinate conversion widget on UI
+    if (widget[tools.indexOf('coordinate conversion')]) {
+      configArcGIS.mapView.ui.add(coordinateConversion, utilLocation)
+    } 
+    // toggle elevation profile widget on UI
+    if (widget[tools.indexOf('elevation profile')]) {
+      configArcGIS.mapView.ui.add(elevationProfile, utilLocation)
+    }
+    // toggle map export widget on UI
+    if (widget[tools.indexOf('export map image')]) {
+      configArcGIS.mapView.ui.add(print, utilLocation)
+    }
+  });
+
+  /************************************ 
+  // Customizable Widgets - only in 2D for now
+  ************************************/
+
+  // define utility render location
+  const widgetLocation = 'bottom-right'
+
+  // initialize widget configuration
+  configArcGIS.mapView.when(() => {    
     // add list of layers widget with toggle option
     const layerList = new LayerList({
       view: configArcGIS.mapView
     });
-    // add basemap toggle widget
-    const toggle = new BasemapToggle({
-      view: configArcGIS.mapView,
-      nextBasemap: 'topo-vector'
-    })
+    // add a time slider for historical data & claims
 
-    // toggle sketch widget to UI
-    if (widget[tools.indexOf('sketch')] === true) {
-      configArcGIS.mapView.ui.add(sketch, "bottom-right")
-    } 
+
     // toggle layerList widget to UI
-    if (widget[tools.indexOf('layers')] === true) {
-      configArcGIS.mapView.ui.add(layerList, "top-right")
-    } 
-    // toggle sketch widget to UI
-    if (widget[tools.indexOf('basemap')] === true) {
-      configArcGIS.mapView.ui.add(toggle, "bottom-left")
+    if (widget[tools.indexOf('layers')]) {
+      configArcGIS.mapView.ui.add(layerList, widgetLocation)
     } 
   });
 
   /************************************ 
-  // NL Live GeoAtlas Data
+  // NL Live Feature Layers
   ************************************/
 
   // base path to GovNL GeoAtlas REST server
   const base: string = 'https://dnrmaps.gov.nl.ca/arcgis/rest/services/GeoAtlas/Mineral_Lands/MapServer/';
 
   // object for customization and importing government REST server data
-  // https://dnrmaps.gov.nl.ca/arcgis/rest/services/GeoAtlas/Mineral_Lands/MapServer/
   type govServerItems = {
     id: number; 
     name: string;
@@ -130,11 +189,11 @@ export function initializeMap(ref: HTMLDivElement, widget: any) { //, toggleSket
     popup: object;
   }
   const govServerItems = [
-      {id: 0, name: "Mineral Exploraiton Claims", ext: '0', visible: true, popup: popups[0]},
-      {id: 1, name: "Historical Exploraiton Claims", ext: '2', visible: false, popup: popups[1]},
-      {id: 2, name: "Mineral Rights Cancelled", ext: '3', visible: false, popup: popups[2]},
-      {id: 3, name: "Notices Gazetted", ext: '4', visible: false, popup: popups[3]},
-      {id: 4, name: "Mineral Tenure", ext: '5', visible: false, popup: popups[4]},
+      {id: 0, name: "Mineral Exploraiton Claims", ext: '0', visible: false, popup: claims},
+      {id: 1, name: "Historical Exploraiton Claims", ext: '2', visible: false, popup: claims},
+      {id: 2, name: "Mineral Rights Cancelled", ext: '3', visible: false, popup: claims},
+      {id: 3, name: "Notices Gazetted", ext: '4', visible: false, popup: gazetted},
+      {id: 4, name: "Mineral Tenure", ext: '5', visible: false, popup: tenure},
   ]
 
   // map government data to feature layers: use government styling for now
@@ -166,15 +225,37 @@ export function initializeMap(ref: HTMLDivElement, widget: any) { //, toggleSket
   // DATA TO IMPORT (Geochemistry)
   // https://dnrmaps.gov.nl.ca/arcgis/rest/services/GeoAtlas/Geochemistry_All/MapServer
 
-  // return appropate view
-  if (widget[tools.indexOf('2D')] === true) { // lookup index dynamically
-    return configArcGIS.mapView
-  } {
-    return configArcGIS.sceneView
-  }
+  /************************************ 
+  // Customizable 2D sliders - After Data Import
+  ************************************/
 
-  // return 2D View 
-  // return view;
-  // return 3D scene
-  // return sceneView;
+  // Define the leading and/or trailing data layers before implementation
+
+  // // initialize widget configuration
+  // configArcGIS.mapView.when(() => {    
+  //   // add list of layers widget with toggle option
+  //   const swipe = new Swipe({
+  //     leadingLayers: // Geophysics #1,
+  //     trailingLayers: // Geophysics#2
+  //     position: 35,
+  //     view: configArcGIS.mapView // not avaliable in 3D
+  //   });
+
+  //   // toggle layerList widget to UI
+  //   if (widget[tools.indexOf('layers')]) {
+  //     configArcGIS.mapView.ui.add(swipe)
+  //   } 
+  // });
+
+  /************************************ 
+  // Return 2D or 3D view
+  ************************************/
+
+  // return default 2D view
+  if (widget[tools.indexOf('2D')]) {
+    return configArcGIS.mapView
+  }
+  
+  // return 3D view
+  return configArcGIS.sceneView
 }
