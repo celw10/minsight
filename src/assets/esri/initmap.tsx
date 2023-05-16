@@ -14,27 +14,13 @@ import Print from "@arcgis/core/widgets/Print";
 import Sketch from "@arcgis/core/widgets/Sketch";
 // import Swipe from "@arcgis/core/widgets/Swipe";
 // Local imports
-import { toolList } from './utils';
-
-// popup labels for cureent live mineral exploration claims
-const claims = {
-  "title": "Mineral Exploration Claim",
-  "content": "<b>Company: </b>{MIRIAD.MIRIAD_LICENSES.CLIENT_NAME}<br> <b>License Number: </b>{MIRIAD.MIRIAD_LICENSES.LICENSE_NBR}<br> <b>Date Staked: </b>{MIRIAD.MIRIAD_LICENSES.STAKEDATE}<br>"  
-};
-const gazetted = {
-  "title": "Notices Gazetted",
-  "content": "<b>License Number: </b>{LICENSE_NBR}<br> <b>Available: </b>{ENDDATE}<br>"  
-};
-const tenure = {
-  "title": "Mineral Tenure",
-  "content": "<b>Company: </b>{COMPANY_NAME}<br> <b>Tenure Name: </b>{FEATURENAME}<br> <b>Mineral Tenure Type: </b>{TYPEDESC}<br>"  
-};
+import { toolList, dataList, govNLDataLoc } from './utils';
 
 // basemap options - linked to utils.tsx
 const basemaps: string[] = ["arcgis-imagery", "arcgis-terrain", "arcgis-topographic", "arcgis-oceans", "arcgis-light-gray", "arcgis-hillshade-light"]
 
 // initalize ArcGIS map
-export function initializeMap(ref: HTMLDivElement, widget: any) { //, toggleSketch: Boolean
+export function initializeMap(ref: HTMLDivElement, widget: any, features: Array<Boolean>) { //, toggleSketch: Boolean
 
   // configure API key
   esriConfig.apiKey = "AAPK9186db7ac712462f993ee74dbab2ea5alOWylmpxBi7cBhK6aozgfEB32gpqW0j48pmktA-Re0TWMR1mtLC0evuyqI_hAiSh"
@@ -177,31 +163,43 @@ export function initializeMap(ref: HTMLDivElement, widget: any) { //, toggleSket
   // NL Live Feature Layers
   ************************************/
 
-  // base path to GovNL GeoAtlas REST server
-  const base: string = 'https://dnrmaps.gov.nl.ca/arcgis/rest/services/GeoAtlas/Mineral_Lands/MapServer/';
+  // flattened array of tool options
+  const featureLayers = dataList.map(({fields}) => fields).flat()
 
-  // object for customization and importing government REST server data
-  type govServerItems = {
-    id: number; 
-    name: string;
-    ext: string;
-    visible: boolean;
-    popup: object;
+  // flattened array of URL ID's
+  const urlIDs = dataList.map(({urlID}) => urlID).flat()
+
+  // flattened array of URL extensions
+  const urlExts = dataList.map(({urlExt}) => urlExt).flat()
+
+  // flattened array of popup templates
+  const popup = dataList.map(({popup}) => popup).flat()
+
+  type govNLData = {
+    id: Number, 
+    name: String, 
+    url: String, 
+    urlext: String, 
+    visible: Boolean, 
+    popup: any,
   }
-  const govServerItems = [
-      {id: 0, name: "Mineral Exploraiton Claims", ext: '0', visible: false, popup: claims},
-      {id: 1, name: "Historical Exploraiton Claims", ext: '2', visible: false, popup: claims},
-      {id: 2, name: "Mineral Rights Cancelled", ext: '3', visible: false, popup: claims},
-      {id: 3, name: "Notices Gazetted", ext: '4', visible: false, popup: gazetted},
-      {id: 4, name: "Mineral Tenure", ext: '5', visible: false, popup: tenure},
-  ]
+  const govNLData = [... Array(featureLayers.length).keys()].map((id, index) => { 
+    return{
+      id: id, 
+      name: featureLayers[index],
+      url: govNLDataLoc[urlIDs[index]].url, 
+      urlext: urlExts[index],
+      visible: features[index], 
+      popup: popup[index], 
+    }
+  })
 
-  // map government data to feature layers: use government styling for now
-  govServerItems.map(item => {
+  // map government data to feature layers with provided styling
+  govNLData.map(item => {
     const govImport = new FeatureLayer({
-      url: base + item.ext,
+      url: item.url + item.urlext,
       title: item.name,
-      visible: item.visible,
+      visible: item.visible, // why error here?
       popupTemplate: item.popup,
       labelsVisible: false,
       outFields: ['*'],
