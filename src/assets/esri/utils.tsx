@@ -6,7 +6,7 @@
 
 // content for the Data Room navigation bar
 export const toolList = [
-    {id: 0, name: "Widgets", fields: ["layers", "legend", "table", "timeline"]},
+    {id: 0, name: "Widgets", fields: ["legend", "timeline"]},
     {id: 1, name: "Utilities", fields: ["sketch", "coordinate conversion", "elevation profile", "export map image"]},
     {id: 2, name: "Sliders", fields: ["swipe", "scroll"]},
     {id: 3, name: "Basemap", fields: ["imagery", "terrain", "topographic", "topographic + oceans", "light", "light hillshade"]}, // dark themed option
@@ -74,7 +74,7 @@ const streamSedGeochem = {
     "title": "Stream Sediment Geochemistry",
     "content": "<b>Gold [ppb]: </b>{AU1_PPB}<br> <b>Silver [ppm]: </b>{AG6_PPM}<br> <b>Cu [ppm]: </b>{Cu4_ppm}<br> <b>Lead [ppm]: </b>{Pb4_ppm}<br> <b>Zinc [ppm]: </b>{Zn4_PPM}<br>"
 }
-// geophysics
+// geophysics - implement later, raster has to be an imagery layer
 const geophysNL = {
     "title": "Newfoundland Residual Magnetics",
 }
@@ -91,6 +91,46 @@ const MODS = {
     "title": "Mineral Showing",
     "content": "<b>Deposit Name:</b> {DEPNAME}<br><b>Commodity:</b> {COMNAME}<br><b>Minerals:</b> {OREMIN}"
 }
+
+/************************************ 
+ // Styling Government Data
+************************************/
+
+// MODS feature layer styling
+const modsRender = {
+    "type": "simple",
+    symbol: {
+        type: "simple-marker",
+        size: 4,
+        color: "white",
+        outline: { 
+          width: 0.4,
+          color: "black"
+        }
+      }
+};
+
+//Label mineral occurrences
+const modsLabels = {
+    symbol: {
+        type: "text",
+        color: "black",
+        haloColor: "white",
+        haloSize: "2px",
+        font: {
+        size: "12px",
+        family: "Noto Sans",
+        style: "italic",
+        weight: "normal"
+        }
+    },
+
+    labelPlacement: "above-center",
+    labelExpressionInfo: {
+        expression: "$feature.MODSLABEL" //Access a feature in the data to label
+    }
+};
+
 /************************************ 
  // Data Room Aside Menu
 ************************************/
@@ -98,22 +138,41 @@ const MODS = {
 // content for the Data Room aside bar
 // urlID and urlExt directly linked to GovNLDataLoc object and the datas location on the REST Server
 export const dataList = [
+    // GIS data 
     {id: 0, name: "GIS", fields: ["exploraiton claims", "histoircal claims", "cancelled claims", "avaliable claims", "mineral tenure"], 
-    urlID: [0, 0, 0, 0, 0], urlExt: ["0", "2", "3", "4", "5"], popup: [claims, claims, claims, gazetted, tenure]},
+    urlID: [0, 0, 0, 0, 0], urlExt: ["0", "2", "3", "4", "5"], popup: [claims, claims, claims, gazetted, tenure],
+    zLevel: [4, 5, 6, 7, 8]},
+    
+    // Geological data
     {id: 1, name: "Geology", fields: ["detailed geology", "generalized geology"],
-    urlID: [2, 2], urlExt: ["19", "23"], popup: [detailedGeology, generalGeology]}, 
+    urlID: [2, 2], urlExt: ["19", "23"], popup: [detailedGeology, generalGeology], 
+    zLevel: [0, 1]}, 
     // name: Geology (detailed) - Labrador detailed geology separated at urlext no. 16, nfld at urlext no. 19 - how to merge?
+    
+
+    // Geochemical data
     {id: 2, name: "Geochemistry", fields: ["rock", "till", "lake sediment", "stream sediment"], 
-    urlID: [3, 3, 3, 3], urlExt: ["0", "4", "84", "296"], popup: [plutonicRockGeochem, tillGeochem, lakeSedGeochem, streamSedGeochem]},
+    urlID: [3, 3, 3, 3], urlExt: ["0", "4", "84", "296"], popup: [plutonicRockGeochem, tillGeochem, lakeSedGeochem, streamSedGeochem], 
+    zLevel: [9, 10, 11, 12]},
     // name: Geochemsitry (rock) - urlExt 1 (volcanic major) and 2 (volcanic minor) additionally avaliable
-    // {id: 3, name: "Geophysics", fields: ["NL. Magnetics", "Lab. Magnetics"], 
-    // urlID: [5, 4], urlExt: ["157", "50"], popup: [geophysNL, geophysLab]},
-    // RASTER FORMAT NOT SUPPORTED
+    
+
+    // Geophysical data
+    {id: 3, name: "Geophysics", fields: ["NL. Magnetics", "Lab. Magnetics"], 
+    urlID: [5, 4], urlExt: ["157", "50"], popup: [geophysNL, geophysLab], 
+    zLevel: [2, 3]},
+    // RASTER FORMAT NOT SUPPORTED - geophysical data will have to be an imagery layer
     // just importing two residual mag datasets in NL and Labrador, need more data types and data consolodation here
-    {id: 4, name: "Drilling", fields: ["drill collars"],
-    urlID: [1, 1], urlExt: ["2", "1"], popup: [drillCollar]},
-    {id: 5, name: "Mineralisation", fields: ["MODS Database"], 
-    urlID: [1], urlExt: ["3"], popup: [MODS]},
+    
+
+    // Drilling data
+    {id: 4, name: "Drilling", fields: ["drill collars"], urlID: [1], urlExt: ["2"], popup: [drillCollar], 
+    zLevel: [13]},
+    
+
+    // Mineralisation data
+    {id: 5, name: "Mineralisation", fields: ["MODS Database"], urlID: [1], urlExt: ["3"], popup: [MODS], 
+    zLevel: [14]},
 ]
 
 /************************************ 

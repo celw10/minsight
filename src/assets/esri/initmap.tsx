@@ -9,18 +9,19 @@ import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 import CoordinateConversion from '@arcgis/core/widgets/CoordinateConversion';
 import ElevationProfile from '@arcgis/core/widgets/ElevationProfile';
 // import Expand from '@arcgis/core/widgets/Expand';
-import LayerList from "@arcgis/core/widgets/LayerList";
+import Legend from "@arcgis/core/widgets/Legend";
 import Print from "@arcgis/core/widgets/Print";
 import Sketch from "@arcgis/core/widgets/Sketch";
 // import Swipe from "@arcgis/core/widgets/Swipe";
 // Local imports
 import { toolList, dataList, govNLDataLoc } from './utils';
+import { getItem } from "localforage";
 
 // basemap options - linked to utils.tsx
 const basemaps: string[] = ["arcgis-imagery", "arcgis-terrain", "arcgis-topographic", "arcgis-oceans", "arcgis-light-gray", "arcgis-hillshade-light"]
 
 // initalize ArcGIS map
-export function initializeMap(ref: HTMLDivElement, widget: any, features: Array<Boolean>) { //, toggleSketch: Boolean
+export function initializeMap(ref: HTMLDivElement, widget: any, features: any) { //, toggleSketch: Boolean
 
   // configure API key
   esriConfig.apiKey = "AAPK9186db7ac712462f993ee74dbab2ea5alOWylmpxBi7cBhK6aozgfEB32gpqW0j48pmktA-Re0TWMR1mtLC0evuyqI_hAiSh"
@@ -138,28 +139,6 @@ export function initializeMap(ref: HTMLDivElement, widget: any, features: Array<
   });
 
   /************************************ 
-  // Customizable Widgets - only in 2D for now
-  ************************************/
-
-  // define utility render location
-  const widgetLocation = 'bottom-right'
-
-  // initialize widget configuration
-  configArcGIS.mapView.when(() => {    
-    // add list of layers widget with toggle option
-    const layerList = new LayerList({
-      view: configArcGIS.mapView
-    });
-    // add a time slider for historical data & claims
-
-
-    // toggle layerList widget to UI
-    if (widget[tools.indexOf('layers')]) {
-      configArcGIS.mapView.ui.add(layerList, widgetLocation)
-    } 
-  });
-
-  /************************************ 
   // NL Live Feature Layers
   ************************************/
 
@@ -175,37 +154,46 @@ export function initializeMap(ref: HTMLDivElement, widget: any, features: Array<
   // flattened array of popup templates
   const popup = dataList.map(({popup}) => popup).flat()
 
-  type govNLData = {
-    id: Number, 
-    name: String, 
-    url: String, 
-    urlext: String, 
-    visible: Boolean, 
-    popup: any,
-  }
+  // data rendering levels
+  const zLevels = dataList.map(({zLevel}) => zLevel).flat()
+
+  // data type array
+  const dType = dataList.map(({name, fields}) => Array(fields.length).fill(name))
+
   const govNLData = [... Array(featureLayers.length).keys()].map((id, index) => { 
     return{
       id: id, 
+      dType: dType,
       name: featureLayers[index],
       url: govNLDataLoc[urlIDs[index]].url, 
       urlext: urlExts[index],
       visible: features[index], 
       popup: popup[index], 
+      zLevel: zLevels[index],
     }
-  })
+  });
+
+  console.log(govNLData)
 
   // map government data to feature layers with provided styling
+
+  // replace map with a filter, do not add Geophysics to Feature Layer, 
+  // filter geophysics and other Raster datasets into an Imagery Layer
+  
+  // {Object.keys(govNLData)}
+
+
   govNLData.map(item => {
     const govImport = new FeatureLayer({
       url: item.url + item.urlext,
       title: item.name,
-      visible: item.visible, // why error here?
+      visible: item.visible,
       popupTemplate: item.popup,
       labelsVisible: false,
       outFields: ['*'],
       //Others?
     })
-    map.add(govImport, item.id)
+    map.add(govImport, item.zLevel)
   });
 
   // // render 2D view layers for 3D scene
@@ -222,6 +210,26 @@ export function initializeMap(ref: HTMLDivElement, widget: any, features: Array<
   // https://dnrmaps.gov.nl.ca/arcgis/rest/services/GeoAtlas/Map_Layers/MapServer
   // DATA TO IMPORT (Geochemistry)
   // https://dnrmaps.gov.nl.ca/arcgis/rest/services/GeoAtlas/Geochemistry_All/MapServer
+
+  /************************************ 
+  // Customizable Widgets - only in 2D for now
+  ************************************/
+
+  // define utility render location
+  const widgetLocation = 'bottom-right'
+
+  // initialize widget configuration
+  configArcGIS.mapView.when(() => {    
+    // add a lengend widget
+    const legend = new Legend({
+      view: configArcGIS.mapView,
+    });
+
+    // toggle legned widget on UI
+    if (widget[tools.indexOf('legend')]) {
+      configArcGIS.mapView.ui.add(legend, widgetLocation)
+    }
+  });
 
   /************************************ 
   // Customizable 2D sliders - After Data Import
