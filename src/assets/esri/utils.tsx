@@ -96,40 +96,41 @@ const MODS = {
  // Styling Government Data
 ************************************/
 
-// MODS feature layer styling
-const modsRender = {
-    "type": "simple",
-    symbol: {
-        type: "simple-marker",
-        size: 4,
-        color: "white",
-        outline: { 
-          width: 0.4,
-          color: "black"
-        }
-      }
-};
+// MODS feature layer styling - I'm going to have to style some of this data, unfortunately
+// But I don't want to style all of it, I'll have to implement a second filter funciton
+// const modsRender = {
+//     "type": "simple",
+//     symbol: {
+//         type: "simple-marker",
+//         size: 4,
+//         color: "white",
+//         outline: { 
+//           width: 0.4,
+//           color: "black"
+//         }
+//       }
+// };
 
-//Label mineral occurrences
-const modsLabels = {
-    symbol: {
-        type: "text",
-        color: "black",
-        haloColor: "white",
-        haloSize: "2px",
-        font: {
-        size: "12px",
-        family: "Noto Sans",
-        style: "italic",
-        weight: "normal"
-        }
-    },
+// //Label mineral occurrences
+// const modsLabels = {
+//     symbol: {
+//         type: "text",
+//         color: "black",
+//         haloColor: "white",
+//         haloSize: "2px",
+//         font: {
+//         size: "12px",
+//         family: "Noto Sans",
+//         style: "italic",
+//         weight: "normal"
+//         }
+//     },
 
-    labelPlacement: "above-center",
-    labelExpressionInfo: {
-        expression: "$feature.MODSLABEL" //Access a feature in the data to label
-    }
-};
+//     labelPlacement: "above-center",
+//     labelExpressionInfo: {
+//         expression: "$feature.MODSLABEL" //Access a feature in the data to label
+//     }
+// };
 
 /************************************ 
  // Data Room Aside Menu
@@ -142,6 +143,7 @@ export const dataList = [
     {id: 0, name: "GIS", fields: ["exploraiton claims", "histoircal claims", "cancelled claims", "avaliable claims", "mineral tenure"], 
     urlID: [0, 0, 0, 0, 0], urlExt: ["0", "2", "3", "4", "5"], popup: [claims, claims, claims, gazetted, tenure],
     zLevel: [4, 5, 6, 7, 8]},
+    // PROBLEM: Mineral doesn't load?
     
     // Geological data
     {id: 1, name: "Geology", fields: ["detailed geology", "generalized geology"],
@@ -173,6 +175,7 @@ export const dataList = [
     // Mineralisation data
     {id: 5, name: "Mineralisation", fields: ["MODS Database"], urlID: [1], urlExt: ["3"], popup: [MODS], 
     zLevel: [14]},
+    // PROBLEM: MODS layer doesn't load?
 ]
 
 /************************************ 

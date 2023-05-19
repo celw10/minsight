@@ -5,6 +5,7 @@ import MapView from "@arcgis/core/views/MapView";
 import SceneView from "@arcgis/core/views/SceneView";
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
+import ImageLayer from "@arcgis/core/layers/ImageryLayer";
 // ArcGIS widgets
 import CoordinateConversion from '@arcgis/core/widgets/CoordinateConversion';
 import ElevationProfile from '@arcgis/core/widgets/ElevationProfile';
@@ -158,12 +159,13 @@ export function initializeMap(ref: HTMLDivElement, widget: any, features: any) {
   const zLevels = dataList.map(({zLevel}) => zLevel).flat()
 
   // data type array
-  const dType = dataList.map(({name, fields}) => Array(fields.length).fill(name))
+  const dType = dataList.map(({name, fields}) => Array(fields.length).fill(name)).flat()
+  console.log(dType)
 
   const govNLData = [... Array(featureLayers.length).keys()].map((id, index) => { 
     return{
       id: id, 
-      dType: dType,
+      dType: dType[index],
       name: featureLayers[index],
       url: govNLDataLoc[urlIDs[index]].url, 
       urlext: urlExts[index],
@@ -174,17 +176,15 @@ export function initializeMap(ref: HTMLDivElement, widget: any, features: any) {
   });
 
   console.log(govNLData)
-
-  // map government data to feature layers with provided styling
-
-  // replace map with a filter, do not add Geophysics to Feature Layer, 
-  // filter geophysics and other Raster datasets into an Imagery Layer
   
-  // {Object.keys(govNLData)}
-
-
-  govNLData.map(item => {
-    const govImport = new FeatureLayer({
+  // allowed data types for feature layer and image layer imput
+  const allowedFeatureLayer = ["GIS", "Geology", "Geochemistry", "Drilling", "Mineralisation"]
+  const allowedImageLayer = ["Geophysics"]
+  
+  // feature layers
+  const govFeatures = govNLData.filter( item => allowedFeatureLayer.includes(item.dType));
+  govFeatures.map(item => {
+    const govFeaturesImport = new FeatureLayer({
       url: item.url + item.urlext,
       title: item.name,
       visible: item.visible,
@@ -193,8 +193,21 @@ export function initializeMap(ref: HTMLDivElement, widget: any, features: any) {
       outFields: ['*'],
       //Others?
     })
-    map.add(govImport, item.zLevel)
+    map.add(govFeaturesImport, item.zLevel)
   });
+
+  // image layers
+  const govImages = govNLData.filter( item => allowedImageLayer.includes(item.dType));
+  govImages.map(img => {
+    const govImageImport = new ImageLayer({
+      url: img.url + img.urlext,
+      format: "tiff",
+      visible: img.visible,
+    })
+    map.add(govImageImport, img.zLevel)
+    // they include the image layer directly in the map definition
+    // check out these docs: https://developers.arcgis.com/javascript/latest/api-reference/esri-layers-ImageryLayer.html?#renderingRule
+  })
 
   // // render 2D view layers for 3D scene
   // function render2DLayer() {
