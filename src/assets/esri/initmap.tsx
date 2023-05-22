@@ -16,7 +16,6 @@ import Sketch from "@arcgis/core/widgets/Sketch";
 // import Swipe from "@arcgis/core/widgets/Swipe";
 // Local imports
 import { toolList, dataList, govNLDataLoc } from './utils';
-import { getItem } from "localforage";
 
 // basemap options - linked to utils.tsx
 const basemaps: string[] = ["arcgis-imagery", "arcgis-terrain", "arcgis-topographic", "arcgis-oceans", "arcgis-light-gray", "arcgis-hillshade-light"]
@@ -160,7 +159,6 @@ export function initializeMap(ref: HTMLDivElement, widget: any, features: any) {
 
   // data type array
   const dType = dataList.map(({name, fields}) => Array(fields.length).fill(name)).flat()
-  console.log(dType)
 
   const govNLData = [... Array(featureLayers.length).keys()].map((id, index) => { 
     return{
@@ -174,8 +172,6 @@ export function initializeMap(ref: HTMLDivElement, widget: any, features: any) {
       zLevel: zLevels[index],
     }
   });
-
-  console.log(govNLData)
   
   // allowed data types for feature layer and image layer imput
   const allowedFeatureLayer = ["GIS", "Geology", "Geochemistry", "Drilling", "Mineralisation"]
@@ -197,17 +193,18 @@ export function initializeMap(ref: HTMLDivElement, widget: any, features: any) {
   });
 
   // image layers
-  const govImages = govNLData.filter( item => allowedImageLayer.includes(item.dType));
-  govImages.map(img => {
-    const govImageImport = new ImageLayer({
-      url: img.url + img.urlext,
-      format: "tiff",
-      visible: img.visible,
-    })
-    map.add(govImageImport, img.zLevel)
+  // not loading as image layer?
+  // const govImages = govNLData.filter( item => allowedImageLayer.includes(item.dType));
+  // govImages.map(img => {
+  //   const govImageImport = new ImageLayer({
+  //     url: img.url + img.urlext,
+  //     format: "tiff", // tiff?
+  //     visible: img.visible,
+  //   })
+  //   map.add(govImageImport, img.zLevel)
     // they include the image layer directly in the map definition
     // check out these docs: https://developers.arcgis.com/javascript/latest/api-reference/esri-layers-ImageryLayer.html?#renderingRule
-  })
+  // })
 
   // // render 2D view layers for 3D scene
   // function render2DLayer() {
