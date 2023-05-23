@@ -58,8 +58,8 @@ export function initializeMap(ref: HTMLDivElement, widget: any, features: any) {
   configArcGIS.mapView = new MapView({
     container: ref,
     map: map,
-    center: [-57.6604, 53.1355], // Longitude, latitude, center of NL
-    zoom: 5 // Zoom level
+    center: [-52.7453, 47.5556], // Longitude, latitude, St. John's
+    zoom: 13 // Zoom level
   });
 
   // graphics layer for sketches
@@ -78,11 +78,12 @@ export function initializeMap(ref: HTMLDivElement, widget: any, features: any) {
       map: scene, 
       camera: {
         position: {
-          x: -52.7453, // St. John's
-          y: 47.5556,
-          z: 4000 // meters
+          x: -52.55, // St. John's
+          y: 47.556,
+          z: 8000 // meters
         },
-        tilt: 75
+        heading: 280,
+        tilt: 55
       },
       container: ref
     });
