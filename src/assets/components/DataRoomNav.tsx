@@ -4,16 +4,30 @@ import { Fragment, useContext } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 // Local import
 import { toolList } from '../esri/utils';
-import { WidgetContext } from '../../pages/DataRoom'
+import { searchContext } from '../../pages/DataRoom'
 
 // funciton to map variably sized objects to menu items
-function populateToolList(fields: Array<string>, toggle: Function, tools: Array<string>, active: Array<Boolean>) {
+function populateToolList(buttonName: string, buttonOptions: string[]) {
+    // buttonName: name of the button being rendered in external map function
+    // buttonOptions: dropdown options associated with each button
 
-    // initiate array to form drop down menu
+    // flattened array of tool options in dropdown
+    const tools: Array<string> = toolList.map(({fields}) => fields).flat()
+
+    // get state as URL search params from context
+    const [searchParams, setSearchParams] = useContext(searchContext); 
+
+    // set active list for button styling
+    let active =  Array(tools.length).fill(false)
+
+    // initiate array to form dropdown menu
     const items: Array<any> = [];
 
+    // console.log(buttonName)
+    // console.log(buttonOptions)
+
     // map fields to array of menu items
-    fields.map((field) => (
+    buttonOptions.map((field) => (
         items.push(
             <Menu.Item as='div' key={tools.indexOf(field)}>
                 {() => (
@@ -21,7 +35,26 @@ function populateToolList(fields: Array<string>, toggle: Function, tools: Array<
                 <button
                     onClick={() => {
                         // update state
-                        toggle(tools, tools.indexOf(field), fields)               
+                        // let params = searchParams.getAll(buttonName); // returning array of features with button name
+                        // let test = searchParams.get(buttonName); // returning single string with button name
+                        // console.log(params)
+                        // console.log(test)
+
+                        const params = [];
+                        searchParams.forEach((value, key) => { // taking the searchParams and turining it into an array
+                            params.push([key, value])
+                        });
+                        const obj = Object.fromEntries(params)
+                        // Can I just take this, change it, then reset searchParams?
+                        console.log(params)
+                        console.log(obj)
+
+                        setSearchParams(obj)
+
+                        // I now have an object here that I can change & reset to search Params? 
+
+                        // setSearchParams({buttonName})
+                        // console.log(searchParams)
                     }} 
                     // style button based on active
                     className={classNames(active[tools.indexOf(field)] ? 'bg-gray-100' : '', 'w-full block px-4 py-2 text-sm text-gray-700')}
@@ -44,30 +77,6 @@ function classNames(...classes: any[]) { // typescript for spread operator?
 
 // navigation tool bar for the data room
 export function DataRoomNav() {
-    
-    //flattened array of tool options
-    const tools: Array<string> = toolList.map(({fields}) => fields).flat()
-
-    // get state defined in dataroom as context 
-    const [widget, setWidget] = useContext(WidgetContext); 
-
-    // toggle boolean value in stateful array 
-    function toggle(tools: Array<string>, j: number, menu: string[]) {
-
-        // create mutable object from widget
-        let updateWidget: Array<Boolean> = widget.slice()
-
-        // set boolean array to false for other fields in menu item - ONLY ONE ACTIVE WIDGET PER MENU
-        for (let i: number = tools.indexOf(menu[0]); i < tools.indexOf(menu[menu.length - 1]) + 1; i ++) {
-            updateWidget[i] = false
-        }
-
-        // toggle index in boolean array
-        updateWidget[j] = !widget[j]
-
-        // update state of widget
-        setWidget(updateWidget)
-    }
 
     return (
         <Disclosure as="nav" className="bg-gray-900">
@@ -94,7 +103,7 @@ export function DataRoomNav() {
                                     >
                                         {/* construct the drop down menu */}
                                         <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                            {populateToolList(tool.fields, toggle, tools, widget)}
+                                            {populateToolList(tool.name, tool.fields)}
                                         </Menu.Items>
                                     </Transition>
                                 </Menu>

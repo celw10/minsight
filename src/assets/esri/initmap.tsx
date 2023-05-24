@@ -5,7 +5,6 @@ import MapView from "@arcgis/core/views/MapView";
 import SceneView from "@arcgis/core/views/SceneView";
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
-import ImageLayer from "@arcgis/core/layers/ImageryLayer";
 // ArcGIS widgets
 import CoordinateConversion from '@arcgis/core/widgets/CoordinateConversion';
 import ElevationProfile from '@arcgis/core/widgets/ElevationProfile';
@@ -21,7 +20,7 @@ import { toolList, dataList, govNLDataLoc } from './utils';
 const basemaps: string[] = ["arcgis-imagery", "arcgis-terrain", "arcgis-topographic", "arcgis-oceans", "arcgis-light-gray", "arcgis-hillshade-light"]
 
 // initalize ArcGIS map
-export function initializeMap(ref: HTMLDivElement, widget: any, features: any) { //, toggleSketch: Boolean
+export function initializeMap(ref: HTMLDivElement, searchParams: any) {
 
   // configure API key
   esriConfig.apiKey = "AAPK9186db7ac712462f993ee74dbab2ea5alOWylmpxBi7cBhK6aozgfEB32gpqW0j48pmktA-Re0TWMR1mtLC0evuyqI_hAiSh"

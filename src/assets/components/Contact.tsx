@@ -2,20 +2,11 @@
 Refactored from the "Centered" page contact example from the following link
 https://tailwindui.com/components/preview#component-10058606cac5398d7fa2c73b64089874
 */
-import { useSearchParams } from "react-router-dom";
 
 export function Contact() {
 
-  // map initalization
-  let mapInit = {view: "2D", imagery: "imagery", tr: "", br: "", bl: ""}
-
-  // test
-  const [searchParams, setSearchParams] = useSearchParams({...mapInit, filters:""});
-
   return (
     <div className="isolate px-6 py-24 sm:py-32 lg:px-8">
-      <button onClick={()=> setSearchParams({...mapInit, filters:"active"})}> Click Me! </button>
-
       <div className="mx-auto max-w-2xl text-center">
         <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Contact us</h2>
         <p className="mt-2 text-lg leading-8 text-gray-600">
