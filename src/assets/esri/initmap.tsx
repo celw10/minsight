@@ -87,7 +87,6 @@ export function initializeMap(ref: HTMLDivElement, widget: any, features: any) {
       },
       container: ref
     });
-
   }
 
   /************************************ 

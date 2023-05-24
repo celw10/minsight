@@ -1,5 +1,6 @@
 // React import 
 import { createContext, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 // Local import
 import { MapView } from "../assets/esri/Map";
 import { DataRoomAside } from "../assets/components/DataRoomAside";

@@ -58,7 +58,6 @@ export function DataRoomNav() {
         let updateWidget: Array<Boolean> = widget.slice()
 
         // set boolean array to false for other fields in menu item - ONLY ONE ACTIVE WIDGET PER MENU
-        // implemented in for loop, this can be a one liner?
         for (let i: number = tools.indexOf(menu[0]); i < tools.indexOf(menu[menu.length - 1]) + 1; i ++) {
             updateWidget[i] = false
         }
