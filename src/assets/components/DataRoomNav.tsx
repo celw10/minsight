@@ -11,6 +11,9 @@ function populateToolList(buttonName: string, buttonOptions: string[]) {
     // buttonName: name of the button being rendered in external map function
     // buttonOptions: dropdown options associated with each button
 
+    // initiate array to form dropdown menu
+    const items: Array<any> = [];
+
     // flattened array of tool options in dropdown
     const tools: Array<string> = toolList.map(({fields}) => fields).flat()
 
@@ -20,11 +23,19 @@ function populateToolList(buttonName: string, buttonOptions: string[]) {
     // set active list for button styling
     let active =  Array(tools.length).fill(false)
 
-    // initiate array to form dropdown menu
-    const items: Array<any> = [];
-
-    // console.log(buttonName)
-    // console.log(buttonOptions)
+    // array of search param key value pairs
+    const params: any[] = [];
+    searchParams.forEach((value: string, key: string) => {
+        params.push([key, value])
+    });
+    
+    // get all the active nav menu button options
+    for (const s of params.map(x => x[1])){
+        if ( s != "" && s != "filters") {
+            active[tools.indexOf(s)] = !active[tools.indexOf(s)]
+        }
+    }
+        
 
     // map fields to array of menu items
     buttonOptions.map((field) => (
@@ -34,28 +45,25 @@ function populateToolList(buttonName: string, buttonOptions: string[]) {
                 // button to toggle ArcGIS widgets
                 <button
                     onClick={() => {
-                        // update state
-                        // let params = searchParams.getAll(buttonName); // returning array of features with button name
-                        // let test = searchParams.get(buttonName); // returning single string with button name
-                        // console.log(params)
-                        // console.log(test)
+                        // reconstruct object from search params key value pairs
+                        const currentSearchParams = Object.fromEntries(params);
 
-                        const params = [];
-                        searchParams.forEach((value, key) => { // taking the searchParams and turining it into an array
-                            params.push([key, value])
-                        });
-                        const obj = Object.fromEntries(params)
-                        // Can I just take this, change it, then reset searchParams?
-                        console.log(params)
-                        console.log(obj)
+                        // menu toggling options
+                        if (["Perspective", "Basemap"].includes(buttonName)) {
+                            // these fields cannot be toggled off
+                            currentSearchParams[buttonName] = field;
+                        } else if (currentSearchParams[buttonName] === field) {
+                            // toggle off 
+                            currentSearchParams[buttonName] = ""
+                        } else {
+                            // toggle on
+                            currentSearchParams[buttonName] = field;
+                        }
 
-                        setSearchParams(obj)
-
-                        // I now have an object here that I can change & reset to search Params? 
-
-                        // setSearchParams({buttonName})
-                        // console.log(searchParams)
+                        // set the new search params
+                        setSearchParams(currentSearchParams)
                     }} 
+
                     // style button based on active
                     className={classNames(active[tools.indexOf(field)] ? 'bg-gray-100' : '', 'w-full block px-4 py-2 text-sm text-gray-700')}
                 >

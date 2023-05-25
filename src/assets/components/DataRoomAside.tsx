@@ -4,28 +4,68 @@ import { Fragment, useContext } from 'react';
 import { Disclosure, Menu, Transition  } from '@headlessui/react';
 // Local import
 import { dataList } from '../esri/utils';
-import { DataContext } from '../../pages/DataRoom'
+import { searchContext } from '../../pages/DataRoom'
 
 // funciton to map variably sized objects to menu items
-function populateToolList(fields: Array<string>, toggle: Function, features: Array<string>, active: Array<Boolean>) {
+function populateToolList(buttonOptions: string[]) {
+  // buttonName: name of the button being rendered in external map function
+  // buttonOptions: dropdown options associated with each button
 
-  // initiate array to form drop down menu
+  // initiate array to form dropdown menu
   const items: Array<any> = [];
 
+  // flattened array of tool options in dropdown
+  const data: Array<string> = dataList.map(({fields}) => fields).flat()
+
+  // get state as URL search params from context
+  const [searchParams, setSearchParams] = useContext(searchContext); 
+
+  // set active list for button styling
+  let active =  Array(data.length).fill(false)
+
+  // array of search param key value pairs
+  const params: any[] = [];
+  searchParams.forEach((value: string, key: string) => {
+      params.push([key, value])
+  });
+  
+  // manipulate filter portion of the route and convert to array
+  const dataFilter = params[params.length-1].slice(1)[0].split('-')
+
+  // get all the active data menu buttons
+  for (const s of dataFilter) {
+    active[data.indexOf(s)] = !active[data.indexOf(s)]
+  }
+
   // map fields to array of menu items
-  fields.map((field) => (
+  buttonOptions.map((field) => (
       items.push(
-          <Menu.Item as='div' key={field}>
+          <Menu.Item as='div' key={data.indexOf(field)}>
               {() => (
-              // button to toggle datasets or feature layers
+              // button to toggle ArcGIS widgets
               <button
                   onClick={() => {
-                      // update state
-                      toggle(features.indexOf(field))
+                      // remove if field is in array
+                      if (dataFilter.includes(field)) {
+                        dataFilter.splice(dataFilter.indexOf(field), 1)
+                      } else {
+                        // append to array of filter options
+                        dataFilter.push(field)
+                      }        
+
+                      // reconstruct object from search params key value pairs
+                      const currentSearchParams = Object.fromEntries(params);
+
+                      // join array based on delimeter to filters
+                      currentSearchParams["filters"] = dataFilter.join('-')
+
+                      // set the new search params
+                      setSearchParams(currentSearchParams)
                   }} 
+
                   // style button based on active
-                  className={classNames(active[features.indexOf(field)] ? 'bg-gray-100' : '', 'w-full block px-4 py-2 text-sm text-gray-700')}
-                  >
+                  className={classNames(active[data.indexOf(field)] ? 'bg-gray-100' : '', 'w-full block px-4 py-2 text-sm text-gray-700')}
+              >
                   {field}
               </button>
               )}
@@ -44,26 +84,6 @@ function classNames(...classes: any[]) { // typescript for spread operator?
 
 // aside data list for the data room
 export function DataRoomAside() {
-
-  //flattened array of tool options
-  const features: Array<string> = dataList.map(({fields}) => fields).flat()
-
-  // get state defined in dataroom as context 
-  const [data, setData] = useContext(DataContext); 
-
-  // toggle boolean value in stateful array 
-  function toggle(j: number) {
-
-      // create mutable object from widget
-      let updateData: Array<Boolean> = data.slice()
-
-      // toggle index in boolean array
-      updateData[j] = !data[j]
-
-      // update state of widget
-      setData(updateData)
-
-   }
 
   return (
     <Disclosure as="aside" className="bg-gray-900">
@@ -90,7 +110,7 @@ export function DataRoomAside() {
                     >
                       {/* construct the drop down menu */}
                       <Menu.Items className="absolute left-0 z-10 mt-2 w-48 origin-top-left rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                          {populateToolList(item.fields, toggle, features, data)}
+                      {populateToolList(item.fields)}
                       </Menu.Items>
                     </Transition>
                   </Menu>

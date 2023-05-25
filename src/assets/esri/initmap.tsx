@@ -14,10 +14,15 @@ import Print from "@arcgis/core/widgets/Print";
 import Sketch from "@arcgis/core/widgets/Sketch";
 // import Swipe from "@arcgis/core/widgets/Swipe";
 // Local imports
-import { toolList, dataList, govNLDataLoc } from './utils';
+import { dataList, govNLDataLoc } from './utils';
 
-// basemap options - linked to utils.tsx
-const basemaps: string[] = ["arcgis-imagery", "arcgis-terrain", "arcgis-topographic", "arcgis-oceans", "arcgis-light-gray", "arcgis-hillshade-light"]
+// basemap object - necessary hard type here
+interface Basemaps {
+  [key: string]: string;
+}
+const basemaps: Basemaps = {"imagery": "arcgis-imagery", "terrain": "arcgis-terrain",
+                            "topographic": "arcgis-topographic", "topographic + oceans": "arcgis-oceans",
+                            "light": "arcgis-light-gray", "light hillshade": "arcgis-hillshade-light"}
 
 // initalize ArcGIS map
 export function initializeMap(ref: HTMLDivElement, searchParams: any) {
@@ -25,15 +30,21 @@ export function initializeMap(ref: HTMLDivElement, searchParams: any) {
   // configure API key
   esriConfig.apiKey = "AAPK9186db7ac712462f993ee74dbab2ea5alOWylmpxBi7cBhK6aozgfEB32gpqW0j48pmktA-Re0TWMR1mtLC0evuyqI_hAiSh"
 
+  // array of search param key value pairs
+  const params: any[] = [];
+  searchParams.forEach((value: string, key: string) => {
+      params.push([key, value])
+  });
+
+  // manipulate filter portion of the route and convert to array
+  const dataFilter = params[params.length-1].slice(1)[0].split('-')
+
+  // reconstruct object from search params key value pairs
+  const currentSearchParams = Object.fromEntries(params);
+
   /************************************ 
   // Setup 2D/3D Map and Basemap
   ************************************/
-
-  // define navigation menu utilities
-  const tools: Array<string> = toolList.map(({fields}) => fields).flat()
-
-  // user-selected basemap, first true in state starting at basemap index
-  const basemapIndex: number = widget.indexOf(true, tools.indexOf('imagery')) - tools.indexOf('imagery')
 
   // initalize - not sure how to interface without any, TS inferring type nulls if I don't set to any. 
   interface config {
@@ -49,7 +60,7 @@ export function initializeMap(ref: HTMLDivElement, searchParams: any) {
 
   // 2D map
   const map = new Map({
-    basemap: basemaps[basemapIndex],
+    basemap: basemaps[currentSearchParams['Basemap']],
     ground: "world-elevation"
   });
 
@@ -65,10 +76,10 @@ export function initializeMap(ref: HTMLDivElement, searchParams: any) {
   configArcGIS.graphics = new GraphicsLayer();
 
   // toggle to 3D perspective
-  if (widget[tools.indexOf('3D')]) {
+  if (currentSearchParams["Perspective"] === '3D') {
     // 3D scene
     const scene = new Map({
-      basemap: basemaps[basemapIndex],
+      basemap: basemaps[currentSearchParams['Basemap']],
       ground: "world-elevation"
     });
   
@@ -120,19 +131,19 @@ export function initializeMap(ref: HTMLDivElement, searchParams: any) {
     });
 
     // toggle sketch widget on UI
-    if (widget[tools.indexOf('sketch')]) {
+    if (currentSearchParams["Utilities"] === 'sketch') {
       configArcGIS.mapView.ui.add(sketch, utilLocation)
     }
     // toggle coordinate conversion widget on UI
-    if (widget[tools.indexOf('coordinate conversion')]) {
+    if (currentSearchParams["Utilities"] === 'coordinate conversion') {
       configArcGIS.mapView.ui.add(coordinateConversion, utilLocation)
     } 
     // toggle elevation profile widget on UI
-    if (widget[tools.indexOf('elevation profile')]) {
+    if (currentSearchParams["Utilities"] === 'elevation profile') {
       configArcGIS.mapView.ui.add(elevationProfile, utilLocation)
     }
     // toggle map export widget on UI
-    if (widget[tools.indexOf('export map image')]) {
+    if (currentSearchParams["Utilities"] === 'export map image') {
       configArcGIS.mapView.ui.add(print, utilLocation)
     }
   });
@@ -159,6 +170,17 @@ export function initializeMap(ref: HTMLDivElement, searchParams: any) {
   // data type array
   const dType = dataList.map(({name, fields}) => Array(fields.length).fill(name)).flat()
 
+  // toggle indicies of tool based on searchParams
+  const visible = Array(featureLayers.length).fill(false)
+  // only if data option is toggled
+  if (dataFilter.length > 1) {
+    for (const s of dataFilter){
+      if (s != "") {
+        visible[featureLayers.indexOf(s)] = !visible[featureLayers.indexOf(s)]
+      }
+    }
+  }
+
   const govNLData = [... Array(featureLayers.length).keys()].map((id, index) => { 
     return{
       id: id, 
@@ -166,7 +188,7 @@ export function initializeMap(ref: HTMLDivElement, searchParams: any) {
       name: featureLayers[index],
       url: govNLDataLoc[urlIDs[index]].url, 
       urlext: urlExts[index],
-      visible: features[index], 
+      visible: visible[index], 
       popup: popup[index], 
       zLevel: zLevels[index],
     }
@@ -174,7 +196,7 @@ export function initializeMap(ref: HTMLDivElement, searchParams: any) {
   
   // allowed data types for feature layer and image layer imput
   const allowedFeatureLayer = ["GIS", "Geology", "Geochemistry", "Drilling", "Mineralisation"]
-  const allowedImageLayer = ["Geophysics"]
+  // const allowedImageLayer = ["Geophysics"]
   
   // feature layers
   const govFeatures = govNLData.filter( item => allowedFeatureLayer.includes(item.dType));
@@ -205,21 +227,6 @@ export function initializeMap(ref: HTMLDivElement, searchParams: any) {
     // check out these docs: https://developers.arcgis.com/javascript/latest/api-reference/esri-layers-ImageryLayer.html?#renderingRule
   // })
 
-  // // render 2D view layers for 3D scene
-  // function render2DLayer() {
-  //   const render = new UniqueValueRenderer({
-  //     field: "MIRIAD.MIRIAD_LICENSES.CLIENT_NAME"
-  //   });
-
-  // }
-
-  //NOTE: Times are formatted 2.5 hours earlier than they should be? 
-
-  // MORE DATA TO IMPORT (Drill Core, Drill Holes, MODS)
-  // https://dnrmaps.gov.nl.ca/arcgis/rest/services/GeoAtlas/Map_Layers/MapServer
-  // DATA TO IMPORT (Geochemistry)
-  // https://dnrmaps.gov.nl.ca/arcgis/rest/services/GeoAtlas/Geochemistry_All/MapServer
-
   /************************************ 
   // Customizable Widgets - only in 2D for now
   ************************************/
@@ -235,7 +242,7 @@ export function initializeMap(ref: HTMLDivElement, searchParams: any) {
     });
 
     // toggle legned widget on UI
-    if (widget[tools.indexOf('legend')]) {
+    if (currentSearchParams["Widgets"] === 'legend') {
       configArcGIS.mapView.ui.add(legend, widgetLocation)
     }
   });
@@ -267,7 +274,7 @@ export function initializeMap(ref: HTMLDivElement, searchParams: any) {
   ************************************/
 
   // return default 2D view
-  if (widget[tools.indexOf('2D')]) {
+  if (currentSearchParams["Perspective"] === '2D') {
     return configArcGIS.mapView
   }
   
