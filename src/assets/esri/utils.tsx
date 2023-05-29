@@ -10,8 +10,8 @@ export const toolList = [
     {id: 1, name: "Utilities", fields: ["sketch", "coordinate conversion", "elevation profile", "export map image"]},
     {id: 2, name: "Sliders", fields: ["swipe", "scroll"]},
     {id: 3, name: "Basemap", fields: ["imagery", "terrain", "topographic", "topographic + oceans", "light", "light hillshade"]}, // dark themed option
-    {id: 4, name: "Perspective", fields: ["2D", "3D"]},
-    {id: 5, name: "Analysis", fields: ["Not", "Implemented"]},
+    // {id: 4, name: "Perspective", fields: ["2D", "3D"]},
+    // {id: 5, name: "Analysis", fields: ["Not", "Implemented"]},
 ] 
 
 /*

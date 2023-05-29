@@ -1,10 +1,11 @@
 // React imports
-import { Fragment, useContext } from 'react';
+import { Fragment } from 'react';
+import { useSearchParams } from "react-router-dom";
+
 // API import
 import { Disclosure, Menu, Transition  } from '@headlessui/react';
 // Local import
 import { dataList } from '../esri/utils';
-import { searchContext } from '../../pages/DataRoom'
 
 // funciton to map variably sized objects to menu items
 function populateToolList(buttonOptions: string[]) {
@@ -18,7 +19,7 @@ function populateToolList(buttonOptions: string[]) {
   const data: Array<string> = dataList.map(({fields}) => fields).flat()
 
   // get state as URL search params from context
-  const [searchParams, setSearchParams] = useContext(searchContext); 
+  const [searchParams, setSearchParams] = useSearchParams({Basemap: "imagery", Utilities: "", Widgets: "", Sliders: "", filters:""}); 
 
   // set active list for button styling
   let active =  Array(data.length).fill(false)
