@@ -9,6 +9,7 @@ import { Home } from './pages/Home';
 import { Feedback } from './pages/Feedback';
 import { DataRoom2D } from "./pages/DataRoom2D";
 import { DataRoom3D } from "./pages/DataRoom3D";
+import { Analysis } from "./pages/Analysis";
 // import { Account } from './pages/Account'; - future implementation
 
 //Render Nav and Footer in the app section once but with the correct styling
@@ -21,9 +22,7 @@ function App() {
         <Route path='contact/' element={<Feedback/>} />
         <Route path='dataroom/2D/' element={<DataRoom2D/>} />
         <Route path='dataroom/3D/' element={<DataRoom3D/>} />
-
-        {/* <Route path='dataroom/3D/' element={<DataRoom3D/>} /> */}
-        {/* <Route path='dataroom/Analysis/' element={<DataRoomAnalysis/>} /> */}
+        <Route path='dataroom/Analysis/' element={<Analysis/>} />
 
         {/* <Route path='account' element={<Account/>} /> - future implementaiton */}
       </Routes>

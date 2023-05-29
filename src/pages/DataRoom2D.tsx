@@ -1,4 +1,3 @@
-// React import 
 // Local import
 import { MapView2D } from "../assets/esri/Map2D";
 import { DataRoomAside } from "../assets/components/DataRoomAside";
