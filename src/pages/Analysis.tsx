@@ -4,7 +4,6 @@ import { LineChart } from "../assets/d3/Plot";
 let data = [
     { date: 20220101, impressions: 100 },
     { date: 20220102, impressions: 120 },
-    // ... truncated but you get it
   ];
 
 // data room parent page

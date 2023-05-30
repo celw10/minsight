@@ -6,7 +6,6 @@ import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 // ArcGIS widgets
 import CoordinateConversion from '@arcgis/core/widgets/CoordinateConversion';
-import ElevationProfile from '@arcgis/core/widgets/ElevationProfile';
 // import Expand from '@arcgis/core/widgets/Expand';
 import Legend from "@arcgis/core/widgets/Legend";
 import Print from "@arcgis/core/widgets/Print";
@@ -36,10 +35,7 @@ export function initializeMap2D(ref: HTMLDivElement, searchParams: any) {
   });
 
   // manipulate filter portion of the route and convert to array
-  const dataFilter = params[params.length-1].slice(1)[0].split('-')
-
-  // reconstruct object from search params key value pairs
-  const currentSearchParams = Object.fromEntries(params);
+  const dataFilter = params.filter(([key, _]) => key==='filters')[0].slice(1)[0].split('-')
 
   /************************************ 
   // Setup 2D Map
@@ -47,8 +43,7 @@ export function initializeMap2D(ref: HTMLDivElement, searchParams: any) {
 
   // 2D map
   const map = new Map({
-    basemap: basemaps[currentSearchParams['Basemap']],
-    ground: "world-elevation"
+    basemap: basemaps[params.filter(([key, _]) => key==='Basemap')[0].slice(1)[0]],
   });
 
   // configure initial map view
@@ -81,12 +76,6 @@ export function initializeMap2D(ref: HTMLDivElement, searchParams: any) {
     const coordinateConversion = new CoordinateConversion({
       view: mapView,
     });
-    // add elevation profile widget
-    const elevationProfile = new ElevationProfile({
-      view: mapView, 
-      profiles: [{type: "ground"}],
-      visibleElements: {selectButton: false}
-    });
     // add printing or map export option
     const print = new Print({
       view: mapView,
@@ -94,19 +83,15 @@ export function initializeMap2D(ref: HTMLDivElement, searchParams: any) {
     });
 
     // toggle sketch widget on UI
-    if (currentSearchParams["Utilities"] === 'sketch') {
+    if (searchParams.get("Utilities") === 'sketch') {
       mapView.ui.add(sketch, utilLocation)
     }
     // toggle coordinate conversion widget on UI
-    if (currentSearchParams["Utilities"] === 'coordinate conversion') {
+    if (searchParams.get("Utilities") === 'coordinate conversion') {
       mapView.ui.add(coordinateConversion, utilLocation)
     } 
-    // toggle elevation profile widget on UI
-    if (currentSearchParams["Utilities"] === 'elevation profile') {
-      mapView.ui.add(elevationProfile, utilLocation)
-    }
     // toggle map export widget on UI
-    if (currentSearchParams["Utilities"] === 'export map image') {
+    if (searchParams.get("Utilities") === 'export map image') {
       mapView.ui.add(print, utilLocation)
     }
   });
@@ -205,7 +190,7 @@ export function initializeMap2D(ref: HTMLDivElement, searchParams: any) {
     });
 
     // toggle legned widget on UI
-    if (currentSearchParams["Widgets"] === 'legend') {
+    if (searchParams.get("Widgets") === 'legend') {
       mapView.ui.add(legend, widgetLocation)
     }
   });

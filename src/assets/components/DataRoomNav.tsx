@@ -12,9 +12,6 @@ function populateToolList(buttonName: string, buttonOptions: string[]) {
     // buttonName: name of the button being rendered in external map function
     // buttonOptions: dropdown options associated with each button
 
-    // initiate array to form dropdown menu
-    const items: Array<any> = [];
-
     // flattened array of tool options in dropdown
     const tools: Array<string> = toolList.map(({fields}) => fields).flat()
 
@@ -39,40 +36,39 @@ function populateToolList(buttonName: string, buttonOptions: string[]) {
         
 
     // map fields to array of menu items
-    buttonOptions.map((field) => (
-        items.push(
-            <Menu.Item as='div' key={tools.indexOf(field)}>
-                {() => (
-                // button to toggle ArcGIS widgets
-                <button
-                    onClick={() => {
-                        // reconstruct object from search params key value pairs
-                        const currentSearchParams = Object.fromEntries(params);
+    const items = buttonOptions.map((field) => (
+        <Menu.Item as='div' key={tools.indexOf(field)}>
+            <button
+                onClick={() => {
+                    // reconstruct object from search params key value pairs
+                    const currentSearchParams = Object.fromEntries(params);
 
-                        // menu toggling options
-                        if (["Basemap"].includes(buttonName)) {
-                            // these fields cannot be toggled off
-                            currentSearchParams[buttonName] = field;
-                        } else if (currentSearchParams[buttonName] === field) {
-                            // toggle off 
-                            currentSearchParams[buttonName] = ""
-                        } else {
-                            // toggle on
-                            currentSearchParams[buttonName] = field;
-                        }
+                    // menu toggling options
+                    if (["Basemap"].includes(buttonName)) {
+                        // these fields cannot be toggled off
+                        currentSearchParams[buttonName] = field;
+                    } else if (currentSearchParams[buttonName] === field) {
+                        // toggle off 
+                        currentSearchParams[buttonName] = ""
+                    } else {
+                        // toggle on
+                        currentSearchParams[buttonName] = field;
+                    }
 
-                        // set the new search params
-                        setSearchParams(currentSearchParams)
-                    }} 
+                    // set the new search params
+                    setSearchParams(currentSearchParams)
 
-                    // style button based on active
-                    className={classNames(active[tools.indexOf(field)] ? 'bg-gray-100' : '', 'w-full block px-4 py-2 text-sm text-gray-700')}
-                >
-                    {field}
-                </button>
-                )}
-            </Menu.Item>
-            )
+                    let test = new URLSearchParams(document.location.search)
+                    console.log(new URLSearchParams(document.location.search).get(buttonName) === field)
+                    // console.log(field in params.get(buttonName))
+                }} 
+
+                // style button based on active
+                className={classNames(active[tools.indexOf(field)] ? 'bg-gray-100' : '', 'w-full block px-4 py-2 text-sm text-gray-700')}
+            >
+                {field}
+            </button>
+        </Menu.Item>
     ));
 
     // return individual drop down menu

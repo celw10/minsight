@@ -7,7 +7,7 @@
 // content for the Data Room navigation bar
 export const toolList = [
     {id: 0, name: "Widgets", fields: ["legend", "timeline"]},
-    {id: 1, name: "Utilities", fields: ["sketch", "coordinate conversion", "elevation profile", "export map image"]},
+    {id: 1, name: "Utilities", fields: ["sketch", "coordinate conversion", "export map image"]},
     {id: 2, name: "Sliders", fields: ["swipe", "scroll"]},
     {id: 3, name: "Basemap", fields: ["imagery", "terrain", "topographic", "topographic + oceans", "light", "light hillshade"]}, // dark themed option
     // {id: 4, name: "Perspective", fields: ["2D", "3D"]},

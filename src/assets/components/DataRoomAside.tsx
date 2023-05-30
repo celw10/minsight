@@ -1,7 +1,6 @@
 // React imports
 import { Fragment } from 'react';
 import { useSearchParams } from "react-router-dom";
-
 // API import
 import { Disclosure, Menu, Transition  } from '@headlessui/react';
 // Local import
@@ -11,9 +10,6 @@ import { dataList } from '../esri/utils';
 function populateToolList(buttonOptions: string[]) {
   // buttonName: name of the button being rendered in external map function
   // buttonOptions: dropdown options associated with each button
-
-  // initiate array to form dropdown menu
-  const items: Array<any> = [];
 
   // flattened array of tool options in dropdown
   const data: Array<string> = dataList.map(({fields}) => fields).flat()
@@ -29,9 +25,9 @@ function populateToolList(buttonOptions: string[]) {
   searchParams.forEach((value: string, key: string) => {
       params.push([key, value])
   });
-  
+
   // manipulate filter portion of the route and convert to array
-  const dataFilter = params[params.length-1].slice(1)[0].split('-')
+  const dataFilter = params.filter(([key, _]) => key==='filters')[0].slice(1)[0].split('-')
 
   // get all the active data menu buttons
   for (const s of dataFilter) {
@@ -39,39 +35,34 @@ function populateToolList(buttonOptions: string[]) {
   }
 
   // map fields to array of menu items
-  buttonOptions.map((field) => (
-      items.push(
-          <Menu.Item as='div' key={data.indexOf(field)}>
-              {() => (
-              // button to toggle ArcGIS widgets
-              <button
-                  onClick={() => {
-                      // remove if field is in array
-                      if (dataFilter.includes(field)) {
-                        dataFilter.splice(dataFilter.indexOf(field), 1)
-                      } else {
-                        // append to array of filter options
-                        dataFilter.push(field)
-                      }        
+  const items = buttonOptions.map((field) => (
+    <Menu.Item as='div' key={data.indexOf(field)}>
+      <button
+          onClick={() => {
+            // remove if field is in array
+            if (dataFilter.includes(field)) {
+              dataFilter.splice(dataFilter.indexOf(field), 1)
+            } else {
+              // append to array of filter options
+              dataFilter.push(field)
+            }        
 
-                      // reconstruct object from search params key value pairs
-                      const currentSearchParams = Object.fromEntries(params);
+            // reconstruct object from search params key value pairs
+            const currentSearchParams = Object.fromEntries(params);
 
-                      // join array based on delimeter to filters
-                      currentSearchParams["filters"] = dataFilter.join('-')
+            // join array based on delimeter to filters
+            currentSearchParams["filters"] = dataFilter.join('-')
 
-                      // set the new search params
-                      setSearchParams(currentSearchParams)
-                  }} 
+            // set the new search params
+            setSearchParams(currentSearchParams)
+        }} 
 
-                  // style button based on active
-                  className={classNames(active[data.indexOf(field)] ? 'bg-gray-100' : '', 'w-full block px-4 py-2 text-sm text-gray-700')}
-              >
-                  {field}
-              </button>
-              )}
-          </Menu.Item>
-          )
+        // style button based on active
+        className={classNames(active[data.indexOf(field)] ? 'bg-gray-100' : '', 'w-full block px-4 py-2 text-sm text-gray-700')}
+      >
+        {field}
+      </button>
+    </Menu.Item>
   ));
 
   // return individual drop down menu
