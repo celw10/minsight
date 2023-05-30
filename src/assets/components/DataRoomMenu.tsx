@@ -1,6 +1,5 @@
 // React imports
 import { Fragment } from 'react';
-import { useSearchParams } from "react-router-dom";
 // API import
 import { Disclosure, Menu, Transition  } from '@headlessui/react';
 
@@ -16,17 +15,18 @@ export function DataRoomMenu(props: any) {
   // type: either "nav" (API tools) or "asid"e (data) from various sources (REST Server, internal database, ect...)
   //*
 
-  // get state as URL search params from context
-  const [searchParams, setSearchParams] = useSearchParams({Basemap: "imagery", Utilities: "", Widgets: "", Sliders: "", filters:""}); 
-
   // array of search param key value pairs
   const params: any[] = [];
-  searchParams.forEach((value: string, key: string) => {
+  props.searchParams.forEach((value: string, key: string) => {
       params.push([key, value])
   });
 
+  console.log(params)
+
   // manipulate filter portion of the route and convert to array
-  const dataFilter = params.filter(([key, _]) => key==='filters')[0].slice(1)[0].split('-')
+  let dataFilter = params.filter(([key, _]) => key==='filters')[0].slice(1)[0].split('-')
+
+  console.log(dataFilter)
 
   return (
     // disclosure as type "aside" (data) or "nav" (API)
@@ -44,7 +44,8 @@ export function DataRoomMenu(props: any) {
                 NOTE: contents is either toolList (nav) or dataList (aside)
                 */}
                 {props.contents.map((item: any) => (
-                  <Menu key={item.id} as="div" className="relative mb-3 z-auto">
+                  <Menu key={item.id} as="div" className={props.type === "aside" ? "relative mb-3 z-auto" 
+                                                                                 : "relative ml-3 z-auto"}>
                     <Menu.Button className={props.type === "aside" ? "flex flex-col rounded-md bg-gray-800 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                                                               : "flex rounded-md bg-gray-800 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"}>
                       <div className='text-white px-3 py-2 text-sm font-medium'> 
@@ -67,7 +68,7 @@ export function DataRoomMenu(props: any) {
                       <Menu.Items className={props.type === "aside" ? "absolute left-0 z-10 mt-2 w-48 origin-top-left rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                                                               : "absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"}>
                         {item.fields.map((field: any) => (
-                          <Menu.Item as='div' key={props.contents.map(({fields}) => fields).flat().indexOf(field)}>
+                          <Menu.Item as='div' key={item.fields.flat().indexOf(field)}>
                             <button
                                 onClick={() => {
                                   // render the appropaite data or features on click
@@ -81,14 +82,17 @@ export function DataRoomMenu(props: any) {
                                     }        
 
                                     // reconstruct object from search params key value pairs
-                                    const currentSearchParams = Object.fromEntries(params);
+                                    let currentSearchParams = Object.fromEntries(params);
+                                    console.log(currentSearchParams)
 
                                     // join array based on delimeter to filters
                                     currentSearchParams["filters"] = dataFilter.join('-')
+                                    console.log(currentSearchParams)
 
                                     // set the new search params
-                                    setSearchParams(currentSearchParams)
-                                  } { //* ArcGIS API *//
+                                    props.setSearchParams(currentSearchParams)
+
+                                  } else { //* ArcGIS API *//
                                     // reconstruct object from search params key value pairs
                                     const currentSearchParams = Object.fromEntries(params);
 
@@ -105,7 +109,7 @@ export function DataRoomMenu(props: any) {
                                     }
 
                                     // set the new search params
-                                    setSearchParams(currentSearchParams)
+                                    props.setSearchParams(currentSearchParams)
                                   };
                                 }} 
 
