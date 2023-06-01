@@ -23,7 +23,6 @@ function App() {
         <Route path='dataroom/2D/' element={<DataRoom2D/>} />
         <Route path='dataroom/3D/' element={<DataRoom3D/>} />
         <Route path='dataroom/Analysis/' element={<Analysis/>} />
-
         {/* <Route path='account' element={<Account/>} /> - future implementaiton */}
       </Routes>
       <Footer />
