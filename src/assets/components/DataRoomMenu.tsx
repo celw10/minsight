@@ -21,12 +21,8 @@ export function DataRoomMenu(props: any) {
       params.push([key, value])
   });
 
-  console.log(params)
-
   // manipulate filter portion of the route and convert to array
   let dataFilter = params.filter(([key, _]) => key==='filters')[0].slice(1)[0].split('-')
-
-  console.log(dataFilter)
 
   return (
     // disclosure as type "aside" (data) or "nav" (API)
@@ -83,11 +79,9 @@ export function DataRoomMenu(props: any) {
 
                                     // reconstruct object from search params key value pairs
                                     let currentSearchParams = Object.fromEntries(params);
-                                    console.log(currentSearchParams)
 
                                     // join array based on delimeter to filters
                                     currentSearchParams["filters"] = dataFilter.join('-')
-                                    console.log(currentSearchParams)
 
                                     // set the new search params
                                     props.setSearchParams(currentSearchParams)
@@ -114,8 +108,10 @@ export function DataRoomMenu(props: any) {
                                 }} 
 
                               // style button based on active
-                              className={classNames(new URLSearchParams(document.location.search).get(item.name) === field ? 'bg-gray-100' : '', 
-                                                                                                   'w-full block px-4 py-2 text-sm text-gray-700')}
+                              className={classNames(String(new URLSearchParams(document.location.search)
+                                                                       .get(props.type === "aside" ? "filters" : item.name))
+                                                                       .includes(field) ? 'bg-gray-100' : '', 
+                                                                       'w-full block px-4 py-2 text-sm text-gray-700')}
                             >
                               {field}
                             </button>

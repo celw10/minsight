@@ -58,9 +58,6 @@ function populateToolList(buttonName: string, buttonOptions: string[]) {
                     // set the new search params
                     setSearchParams(currentSearchParams)
 
-                    let test = new URLSearchParams(document.location.search)
-                    console.log(new URLSearchParams(document.location.search).get(buttonName) === field)
-                    // console.log(field in params.get(buttonName))
                 }} 
 
                 // style button based on active

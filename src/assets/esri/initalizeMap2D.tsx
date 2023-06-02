@@ -4,6 +4,7 @@ import Map from "@arcgis/core/Map";
 import MapView from "@arcgis/core/views/MapView";
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
+import MapImageLayer from "@arcgis/core/layers/MapImageLayer";
 // ArcGIS widgets
 import CoordinateConversion from '@arcgis/core/widgets/CoordinateConversion';
 // import Expand from '@arcgis/core/widgets/Expand';
@@ -141,10 +142,10 @@ export function initializeMap2D(ref: HTMLDivElement, searchParams: any) {
       zLevel: zLevels[index],
     }
   });
-  
+
   // allowed data types for feature layer and image layer imput
   const allowedFeatureLayer = ["GIS", "Geology", "Geochemistry", "Drilling", "Mineralisation"]
-  // const allowedImageLayer = ["Geophysics"]
+  const allowedImageLayer = ["Geophysics"]
   
   // feature layers
   const govFeatures = govNLData.filter( item => allowedFeatureLayer.includes(item.dType));
@@ -157,23 +158,24 @@ export function initializeMap2D(ref: HTMLDivElement, searchParams: any) {
       labelsVisible: false,
       outFields: ['*'],
       //Others?
-    })
+    });
     map.add(govFeaturesImport, item.zLevel)
   });
 
-  // image layers
-  // not loading as image layer?
+  // // image layers
+  // // IMPLEMENT WORK AROUND USING LOCAL STORAGE RASTER IMAGES? 
   // const govImages = govNLData.filter( item => allowedImageLayer.includes(item.dType));
   // govImages.map(img => {
-  //   const govImageImport = new ImageLayer({
+  //   const test = new MapImageLayer({
   //     url: img.url + img.urlext,
-  //     format: "tiff", // tiff?
-  //     visible: img.visible,
-  //   })
-  //   map.add(govImageImport, img.zLevel)
-    // they include the image layer directly in the map definition
-    // check out these docs: https://developers.arcgis.com/javascript/latest/api-reference/esri-layers-ImageryLayer.html?#renderingRule
+  //     // format: "tiff", // tiff?
+  //     // visible: img.visible,
+  //   });
+  //   map.add(test)
   // })
+
+  // LOCALLY HOSTING DATA? 
+  // https://stackoverflow.com/questions/65875505/storing-features-layer-with-arcgis-or-as-geojson-locally-to-access-database-data
 
   /************************************ 
   // Customizable Widgets

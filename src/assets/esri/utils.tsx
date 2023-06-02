@@ -39,15 +39,15 @@ Others to implement:
 const claims = {
     "title": "Mineral Exploration Claim",
     "content": "<b>Company: </b>{MIRIAD.MIRIAD_LICENSES.CLIENT_NAME}<br> <b>License Number: </b>{MIRIAD.MIRIAD_LICENSES.LICENSE_NBR}<br> <b>Date Staked: </b>{MIRIAD.MIRIAD_LICENSES.STAKEDATE}<br>"  
-  };
+};
 const gazetted = {
     "title": "Notices Gazetted",
     "content": "<b>License Number: </b>{LICENSE_NBR}<br> <b>Available: </b>{ENDDATE}<br>"  
-  };
+};
 const tenure = {
     "title": "Mineral Tenure",
     "content": "<b>Company: </b>{COMPANY_NAME}<br> <b>Tenure Name: </b>{FEATURENAME}<br> <b>Mineral Tenure Type: </b>{TYPEDESC}<br>"  
-  };
+};
 // geology
 const generalGeology = {
     "title": "Generalized Bedrock Geology",
@@ -87,9 +87,9 @@ const drillCollar = {
     "content": "<b>Company: </b>{Company}<br> <b>Year: </b>{Year_Drill}<br> <b>Hole ID: </b>{HoleID}<br> <b>Geofile: </b>{GEOFILE_NO}<br>"
 }
 // mineralisation
-const MODS = {
+const mods = {
     "title": "Mineral Showing",
-    "content": "<b>Deposit Name:</b> {DEPNAME}<br><b>Commodity:</b> {COMNAME}<br><b>Minerals:</b> {OREMIN}"
+    "content": "<b>Deposit Name:</b> {DEPNAME}<br> <b>Commodity:</b> {COMNAME}<br> <b>Minerals:</b> {OREMIN}"
 }
 
 /************************************ 
@@ -157,7 +157,6 @@ export const dataList = [
     urlID: [3, 3, 3, 3], urlExt: ["0", "4", "84", "296"], popup: [plutonicRockGeochem, tillGeochem, lakeSedGeochem, streamSedGeochem], 
     zLevel: [9, 10, 11, 12]},
     // name: Geochemsitry (rock) - urlExt 1 (volcanic major) and 2 (volcanic minor) additionally avaliable
-    
 
     // Geophysical data
     {id: 3, name: "Geophysics", fields: ["NL. Magnetics", "Lab. Magnetics"], 
@@ -165,15 +164,13 @@ export const dataList = [
     zLevel: [2, 3]},
     // RASTER FORMAT NOT SUPPORTED - geophysical data will have to be an imagery layer
     // just importing two residual mag datasets in NL and Labrador, need more data types and data consolodation here
-    
 
     // Drilling data
     {id: 4, name: "Drilling", fields: ["drill collars"], urlID: [1], urlExt: ["2"], popup: [drillCollar], 
     zLevel: [13]},
-    
 
     // Mineralisation data
-    {id: 5, name: "Mineralisation", fields: ["MODS Database"], urlID: [1], urlExt: ["3"], popup: [MODS], 
+    {id: 5, name: "Mineralisation", fields: ["MODS Database"], urlID: [1], urlExt: ["3"], popup: [mods], 
     zLevel: [14]},
     // PROBLEM: MODS layer doesn't load?
 ]
