@@ -1,5 +1,6 @@
 // React import
 import { useRef, useEffect } from "react";
+// import ReactDOM from 'react-dom/client'
 // D3 import
 import * as d3 from "d3";
 
@@ -84,28 +85,30 @@ function draw(ref: HTMLDivElement | null, props: IBasicLineChartProps) {
           .y((d) => y((d as unknown as { date: any; value: any }).value))
       );
   });
-  
-  // return graphic // 
-  return svg
+
+  return 1
 }
 
 export const PlotD3 = (props: IBasicLineChartProps) => {
+  
   const ref = useRef<HTMLDivElement>(null);
 
-  // this is // 
+  let plotFlag: number | null = null
 
-  // useEffect = function call
+  // this is
+
+  // useEffect = function calla
   //   - passing a callback
-  //     - return a cleanup / 
-
-  let svg: any = null  
+  //     - return a cleanup
 
   useEffect(() => {
-    if (svg === null) {
-      svg = draw(ref.current, props);
+    if (plotFlag === null) {
+      plotFlag = draw(ref.current, props);
     }
   }, [props]);
 
-  return <div className="h-screen w-screen p-0 m-0" ref={ref}></div>;
+  // This is rendering a new graph each time I "hot save"
+  // I had this issue with ArcGIS API earlier, but I don't remember how I solved it
+  // Both situations are slightly different. I tried some of the stratigies implemented in Map2D and initMap2D
+  return <div className="h-4/5 w-4/5 p-0 m-0" ref={ref}></div>;
 };
-

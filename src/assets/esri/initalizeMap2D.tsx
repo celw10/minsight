@@ -4,13 +4,14 @@ import Map from "@arcgis/core/Map";
 import MapView from "@arcgis/core/views/MapView";
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
-import MapImageLayer from "@arcgis/core/layers/MapImageLayer";
+import CSVLayer from "@arcgis/core/layers/CSVLayer";
+// import geometryEngineAsync from "@arcgis/core/geometry/geometryEngineAsync";
 // ArcGIS widgets
 import CoordinateConversion from '@arcgis/core/widgets/CoordinateConversion';
-// import Expand from '@arcgis/core/widgets/Expand';
 import Legend from "@arcgis/core/widgets/Legend";
 import Print from "@arcgis/core/widgets/Print";
 import Sketch from "@arcgis/core/widgets/Sketch";
+import SketchViewModel from "@arcgis/core/widgets/Sketch/SketchViewModel";
 // import Swipe from "@arcgis/core/widgets/Swipe";
 // Local imports
 import { dataList, govNLDataLoc } from './utils';
@@ -39,12 +40,58 @@ export function initializeMap2D(ref: HTMLDivElement, searchParams: any) {
   const dataFilter = params.filter(([key, _]) => key==='filters')[0].slice(1)[0].split('-')
 
   /************************************ 
+  // Setup Example Database
+  ************************************/
+
+  // TRY TO PROPERLY IMPLEMENT THIS EXAMPLE USING A FEATURE LAYER TABLE
+  // https://developers.arcgis.com/javascript/latest/sample-code/sandbox/?sample=highlight-features-by-geometry
+
+  // OR
+  //https://developers.arcgis.com/javascript/latest/sample-code/layers-scenelayerview-query-stats/
+
+  const csvLayer = new CSVLayer({
+    url: "https://ubatsukh.github.io/arcgis-js-api-demos/devsummit2021/csvLayer-nps/data/nps_establishments.csv",
+    delimiter: ",",
+    popupTemplate: {
+      title: "{unit_name}",
+      content: "Established on <b>{date_est}</b> <br/><br/> {description}"
+    },
+    renderer: setRenderer()
+  });
+
+  let csvLayerView: any;
+  csvLayer
+    .when(() => {
+      mapView.whenLayerView(csvLayer).then(function (layerView) {
+        csvLayerView = layerView;
+      });
+    })
+    .catch(errorCallback);
+
+  function errorCallback(error: any) {
+    console.log("error happened:", error.message);
+  }
+
+  function setRenderer() {
+    return {
+      type: "simple",
+      symbol: {
+          type: "simple-marker",  // autocasts as new SimpleMarkerSymbol()
+          size: 4,
+          color: "white",
+        }
+    };
+  }
+  /************************************ 
   // Setup 2D Map
   ************************************/
+  // graphics layer for sketches
+  const graphics = new GraphicsLayer();
 
   // 2D map
   const map = new Map({
     basemap: basemaps[params.filter(([key, _]) => key==='Basemap')[0].slice(1)[0]],
+    layers: [graphics, csvLayer]
   });
 
   // configure initial map view
@@ -55,8 +102,78 @@ export function initializeMap2D(ref: HTMLDivElement, searchParams: any) {
     zoom: 13 // Zoom level
   });
 
-  // graphics layer for sketches
-  const graphics = new GraphicsLayer();
+  //
+
+  // polygonGraphicsLayer will be used by the sketchviewmodel
+  // show the polygon being drawn on the view
+  // const polygonGraphicsLayer = new GraphicsLayer();
+  // map.add(polygonGraphicsLayer);
+
+  // // add the select by rectangle button the view
+  // mapView.ui.add("select-by-rectangle", "top-left");
+  // const selectButton = document.getElementById("select-by-rectangle");
+
+  // // click event for the select by rectangle button
+  // selectButton.addEventListener("click", () => {
+  //   mapView.popup.close();
+  //   sketchViewModel.create("rectangle");
+  // });
+
+  // // add the clear selection button the view
+  // mapView.ui.add("clear-selection", "top-left");
+  // document
+  //   .getElementById("clear-selection")
+  //   // .addEventListener("click", () => {
+  //   //   featureTable.clearSelection();
+  //   //   featureTable.filterGeometry = null;
+  //   //   polygonGraphicsLayer.removeAll();
+  //   // });
+
+  // create a new sketch view model set its layer
+  const sketchViewModel = new SketchViewModel({
+    view: mapView,
+    layer: graphics
+  });
+
+  // Once user is done drawing a rectangle on the map
+  // use the rectangle to select features on the map and table
+  sketchViewModel.on("create", async (event) => {
+    if (event.state === "complete") {
+      // this polygon will be used to query features that intersect it
+      const geometries = graphics.graphics.map(function (
+        graphic
+      ) {
+        return graphic.geometry;
+      });
+      const queryGeometry = //await geometryEngineAsync.union(
+        geometries.toArray()
+      // );
+      selectFeatures(queryGeometry);
+    }
+  });
+
+  // This function is called when user completes drawing a rectangle
+  // on the map. Use the rectangle to select features in the layer and table
+  function selectFeatures(geometry: any) {
+    if (csvLayerView) {
+      // create a query and set its geometry parameter to the
+      // rectangle that was drawn on the view
+      const query = {
+        geometry: geometry,
+        outFields: ["*"]
+      };
+
+      // query graphics from the csv layer view. Geometry set for the query
+      // can be polygon for point features and only intersecting geometries are returned
+      csvLayerView
+        .queryFeatures(query)
+        .then((results: any) => {
+          console.log(results)
+          }
+        )
+        .catch(errorCallback);
+    }
+  }
 
   /************************************ 
   // Customizable Utilities
@@ -71,7 +188,7 @@ export function initializeMap2D(ref: HTMLDivElement, searchParams: any) {
     const sketch = new Sketch({
       layer: graphics,
       view: mapView,
-      creationMode: "update",
+      // creationMode: "update",
     });
     // add coordinate conversion widget
     const coordinateConversion = new CoordinateConversion({
@@ -145,7 +262,7 @@ export function initializeMap2D(ref: HTMLDivElement, searchParams: any) {
 
   // allowed data types for feature layer and image layer imput
   const allowedFeatureLayer = ["GIS", "Geology", "Geochemistry", "Drilling", "Mineralisation"]
-  const allowedImageLayer = ["Geophysics"]
+  // const allowedImageLayer = ["Geophysics"]
   
   // feature layers
   const govFeatures = govNLData.filter( item => allowedFeatureLayer.includes(item.dType));
@@ -159,7 +276,7 @@ export function initializeMap2D(ref: HTMLDivElement, searchParams: any) {
       outFields: ['*'],
       //Others?
     });
-    map.add(govFeaturesImport, item.zLevel)
+    map.layers.add(govFeaturesImport, item.zLevel)
   });
 
   // // image layers

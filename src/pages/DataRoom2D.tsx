@@ -18,6 +18,7 @@ export const DataRoom2D = () => {
         <div className="flex flex-col"> 
             {/* <DataRoomNav /> */}
             <DataRoomMenu contents={toolList} type={'nav'} searchParams={searchParams} setSearchParams={setSearchParams}/>
+            {/* problem with screen height here */}
             <div className="flex h-screen flex-row">
                 {/* <DataRoomAside /> */}
                 <DataRoomMenu contents={dataList} type={'aside'} searchParams={searchParams} setSearchParams={setSearchParams}/>

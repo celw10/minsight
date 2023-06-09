@@ -27,5 +27,6 @@ export const MapView2D = (props: any) => {
     }, [props.searchParams]); // dependency for re-rendeing - maybe a button to re-render the map? 
     
     // return ArcGIS map as div element
+    // setting h & w to screen is just filling container
     return <div className='h-screen w-screen p-0 m-0' ref={containerRef}></div>;
 }
