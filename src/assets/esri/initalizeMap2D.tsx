@@ -40,7 +40,7 @@ export function initializeMap2D(ref: HTMLDivElement, searchParams: any) {
   const dataFilter = params.filter(([key, _]) => key==='filters')[0].slice(1)[0].split('-')
 
   /************************************ 
-  // Setup Example Database
+  // Setup Example CSV Database
   ************************************/
 
   // TRY TO PROPERLY IMPLEMENT THIS EXAMPLE USING A FEATURE LAYER TABLE
@@ -62,7 +62,7 @@ export function initializeMap2D(ref: HTMLDivElement, searchParams: any) {
   let csvLayerView: any;
   csvLayer
     .when(() => {
-      mapView.whenLayerView(csvLayer).then(function (layerView) {
+      view.whenLayerView(csvLayer).then(function (layerView) {
         csvLayerView = layerView;
       });
     })
@@ -82,140 +82,34 @@ export function initializeMap2D(ref: HTMLDivElement, searchParams: any) {
         }
     };
   }
+
   /************************************ 
   // Setup 2D Map
   ************************************/
-  // graphics layer for sketches
-  const graphics = new GraphicsLayer();
+
+  // graphics layer for data selection sketching
+  // const sketchLayer = new GraphicsLayer()
 
   // 2D map
   const map = new Map({
     basemap: basemaps[params.filter(([key, _]) => key==='Basemap')[0].slice(1)[0]],
-    layers: [graphics, csvLayer]
+    layers: [csvLayer] // link csv layer database in layers here
   });
 
   // configure initial map view
-  const mapView = new MapView({
+  const view = new MapView({
     container: ref,
     map: map,
+    highlightOptions: {
+      color: "#2B65EC",
+      fillOpacity: 0.4
+    },
     center: [-52.7453, 47.5556], // Longitude, latitude, St. John's
     zoom: 13 // Zoom level
   });
 
-  //
-
-  // polygonGraphicsLayer will be used by the sketchviewmodel
-  // show the polygon being drawn on the view
-  // const polygonGraphicsLayer = new GraphicsLayer();
-  // map.add(polygonGraphicsLayer);
-
-  // // add the select by rectangle button the view
-  // mapView.ui.add("select-by-rectangle", "top-left");
-  // const selectButton = document.getElementById("select-by-rectangle");
-
-  // // click event for the select by rectangle button
-  // selectButton.addEventListener("click", () => {
-  //   mapView.popup.close();
-  //   sketchViewModel.create("rectangle");
-  // });
-
-  // // add the clear selection button the view
-  // mapView.ui.add("clear-selection", "top-left");
-  // document
-  //   .getElementById("clear-selection")
-  //   // .addEventListener("click", () => {
-  //   //   featureTable.clearSelection();
-  //   //   featureTable.filterGeometry = null;
-  //   //   polygonGraphicsLayer.removeAll();
-  //   // });
-
-  // create a new sketch view model set its layer
-  const sketchViewModel = new SketchViewModel({
-    view: mapView,
-    layer: graphics
-  });
-
-  // Once user is done drawing a rectangle on the map
-  // use the rectangle to select features on the map and table
-  sketchViewModel.on("create", async (event) => {
-    if (event.state === "complete") {
-      // this polygon will be used to query features that intersect it
-      const geometries = graphics.graphics.map(function (
-        graphic
-      ) {
-        return graphic.geometry;
-      });
-      const queryGeometry = //await geometryEngineAsync.union(
-        geometries.toArray()
-      // );
-      selectFeatures(queryGeometry);
-    }
-  });
-
-  // This function is called when user completes drawing a rectangle
-  // on the map. Use the rectangle to select features in the layer and table
-  function selectFeatures(geometry: any) {
-    if (csvLayerView) {
-      // create a query and set its geometry parameter to the
-      // rectangle that was drawn on the view
-      const query = {
-        geometry: geometry,
-        outFields: ["*"]
-      };
-
-      // query graphics from the csv layer view. Geometry set for the query
-      // can be polygon for point features and only intersecting geometries are returned
-      csvLayerView
-        .queryFeatures(query)
-        .then((results: any) => {
-          console.log(results)
-          }
-        )
-        .catch(errorCallback);
-    }
-  }
-
   /************************************ 
-  // Customizable Utilities
-  ************************************/
-
-  // define utility render location
-  const utilLocation = 'top-right'
-
-  // initialize widget configuration
-  mapView.when(() => {    
-    // add sketch widget
-    const sketch = new Sketch({
-      layer: graphics,
-      view: mapView,
-      // creationMode: "update",
-    });
-    // add coordinate conversion widget
-    const coordinateConversion = new CoordinateConversion({
-      view: mapView,
-    });
-    // add printing or map export option
-    const print = new Print({
-      view: mapView,
-      printServiceUrl: "https://utility.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task"
-    });
-
-    // toggle sketch widget on UI
-    if (searchParams.get("Utilities") === 'sketch') {
-      mapView.ui.add(sketch, utilLocation)
-    }
-    // toggle coordinate conversion widget on UI
-    if (searchParams.get("Utilities") === 'coordinate conversion') {
-      mapView.ui.add(coordinateConversion, utilLocation)
-    } 
-    // toggle map export widget on UI
-    if (searchParams.get("Utilities") === 'export map image') {
-      mapView.ui.add(print, utilLocation)
-    }
-  });
-
-  /************************************ 
-  // NL Live Feature Layers
+  // Add Live NL Layers to Map
   ************************************/
 
   // flattened array of tool options
@@ -295,6 +189,112 @@ export function initializeMap2D(ref: HTMLDivElement, searchParams: any) {
   // https://stackoverflow.com/questions/65875505/storing-features-layer-with-arcgis-or-as-geojson-locally-to-access-database-data
 
   /************************************ 
+  // Adding Graphics
+  ************************************/
+
+  // polygon graphics layer will be used by the sketchviewmodel
+  // this is showing the polygon being drawn on the view
+  const polygonGraphicsLayer = new GraphicsLayer();
+  map.add(polygonGraphicsLayer);
+
+  //create a new sketchViewModel and set its layer
+  let sketchViewModel = new SketchViewModel({
+    view: view,
+    layer: polygonGraphicsLayer,
+    pointSymbol: {
+      type: "simple-marker",
+      color: [255, 255, 255, 0],
+      size: "1px",
+      outline: {
+        color: "gray",
+        width: 0
+      }
+    }
+  });
+
+  sketchViewModel.on("create", function(event: any) {
+    console.log("Create")
+    if (event.state === "complete") {
+      console.log("Complete")
+      console.log(event.graphic.geometry)
+      selectFeatures(event.graphic.geometry)
+    }
+  })
+
+  let highlight: any;
+
+  // selects features from the csv layer that intersect a polygon that user drew using sketch view model
+  function selectFeatures(geometry: any) {
+    view.graphics.removeAll();
+    if (csvLayerView) {
+      //create a query and ste geometry parameter to the polygon that was drawn
+      const query: any = {
+        geometry: geometry,
+        outfields: ["*"]
+      };
+      // query graphics from the csv layer view
+      csvLayerView.queryFeatures(query).then(function(results: any) {
+        const graphics = results.features;
+        if (graphics.length > 0) {
+          // zoom to the extent of the query area
+          view.goTo(geometry.extent.expand(2));
+        }
+
+        // remove existing highlighted features
+        if (highlight) {
+          highlight.remove();
+        }
+
+        // highlight query results 
+        highlight = csvLayerView.highlight(graphics);
+      })
+      .catch(errorCallback)
+    }
+  }
+
+
+
+  /************************************ 
+  // Customizable Utilities
+  ************************************/
+
+  // define utility render location
+  const utilLocation = 'top-right'
+
+  // initialize widget configuration
+  view.when(() => {    
+    // add sketch widget
+    const sketch = new Sketch({
+      layer: polygonGraphicsLayer,
+      view: view,
+      viewModel: sketchViewModel 
+      // creationMode: "update",
+    });
+    // add coordinate conversion widget
+    const coordinateConversion = new CoordinateConversion({
+      view: view,
+    });
+    // add printing or map export option
+    const print = new Print({
+      view: view,
+      printServiceUrl: "https://utility.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task"
+    });
+
+    // toggle sketch widget on UI
+    if (searchParams.get("Utilities") === 'sketch') {
+      view.ui.add(sketch, utilLocation)
+    }
+    // toggle coordinate conversion widget on UI
+    if (searchParams.get("Utilities") === 'coordinate conversion') {
+      view.ui.add(coordinateConversion, utilLocation)
+    } 
+    // toggle map export widget on UI
+    if (searchParams.get("Utilities") === 'export map image') {
+      view.ui.add(print, utilLocation)
+    }
+  });
+
+  /************************************ 
   // Customizable Widgets
   ************************************/
 
@@ -302,15 +302,15 @@ export function initializeMap2D(ref: HTMLDivElement, searchParams: any) {
   const widgetLocation = 'bottom-right'
 
   // initialize widget configuration
-  mapView.when(() => {    
+  view.when(() => {    
     // add a lengend widget
     const legend = new Legend({
-      view: mapView,
+      view: view,
     });
 
     // toggle legned widget on UI
     if (searchParams.get("Widgets") === 'legend') {
-      mapView.ui.add(legend, widgetLocation)
+      view.ui.add(legend, widgetLocation)
     }
   });
 
@@ -337,5 +337,5 @@ export function initializeMap2D(ref: HTMLDivElement, searchParams: any) {
   // });
 
   // return default 2D view
-  return mapView
+  return view
 }
