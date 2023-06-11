@@ -1,7 +1,5 @@
 // React import
 import { useSearchParams } from "react-router-dom";
-// Shadui-tabs import
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs"
 // D3 import
 import { PlotD3 } from "../assets/d3/Plot";
 // Local import
