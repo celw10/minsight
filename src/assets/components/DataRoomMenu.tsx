@@ -27,23 +27,23 @@ export function DataRoomMenu(props: any) {
   return (
     // disclosure as type "aside" (data) or "nav" (API)
     <Disclosure as={props.type} className="bg-gray-900">
-        <div className={props.type === "aside" ? "mx-auto max-w-sm px-2 sm:px-6 lg:px-8"
-                                         : "mx-auto w-full px-2 sm:px-6 lg:px-8"}>
-          <div className={props.type === "aside" ? "relative flex flex-col items-center justify-between" 
-                                           : "relative flex h-16"}>
-            <div className={props.type === "aside" ? "flex flex-col justify-center sm:items-stretch sm:justify-end"
-                                             : "flex flex-1 justify-center sm:items-stretch sm:justify-end"}>                     
-              <div className={props.type === "aside" ? "absolute inset-y-0 left-0 flex flex-col items-left pt-2 sm:static sm:inset-auto sm:mt-6 sm:pt-0" 
-                                               : "absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0"}>
+        <div className={classNames(props.type === "aside" ? "mx-auto max-w-sm"
+                                         : "mx-auto w-full", "px-2 sm:px-6 lg:px-8")}>
+          <div className={classNames(props.type === "aside" ? "flex-col items-center justify-between" 
+                                           : "h-16", "relative flex")}>
+            <div className={classNames(props.type === "aside" ? "flex-col"
+                                             : "flex-1", "flex justify-center sm:items-stretch sm:justify-end")}>                     
+              <div className={classNames(props.type === "aside" ? "left-0 flex-col items-left pt-2 sm:mt-6 sm:pt-0" 
+                                               : "right-0 items-center pr-2 sm:ml-6 sm:pr-0", "absolute inset-y-0 flex sm:static sm:inset-auto")}>
                 {/* 
                 Render menu buttons as aside or nav
                 NOTE: contents is either toolList (nav) or dataList (aside)
                 */}
                 {props.contents.map((item: any) => (
-                  <Menu key={item.id} as="div" className={props.type === "aside" ? "relative mb-3 z-auto" 
-                                                                                 : "relative ml-3 z-auto"}>
-                    <Menu.Button className={props.type === "aside" ? "flex flex-col rounded-md bg-gray-800 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                                                              : "flex rounded-md bg-gray-800 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"}>
+                  <Menu key={item.id} as="div" className={classNames(props.type === "aside" ? "mb-3" 
+                                                                                 : "ml-3", "relative z-auto")}>
+                    <Menu.Button className={classNames(props.type === "aside" ? "flex-col "
+                                                              : "", "flex rounded-md bg-gray-800 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800")}>
                       <div className='text-white px-3 py-2 text-sm font-medium'> 
                         {item.name} 
                       </div>
@@ -61,8 +61,8 @@ export function DataRoomMenu(props: any) {
                       {/* 
                       Construct a drop-down menu for each button
                       */}
-                      <Menu.Items className={props.type === "aside" ? "absolute left-0 z-10 mt-2 w-48 origin-top-left rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-                                                              : "absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"}>
+                      <Menu.Items className={classNames(props.type === "aside" ? "left-0 origin-top-left"
+                                                              : "right-0 origin-top-right", " z-10 mt-2 w-48 absolute rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none")}>
                         {item.fields.map((field: any) => (
                           <Menu.Item as='div' key={item.fields.flat().indexOf(field)}>
                             <button

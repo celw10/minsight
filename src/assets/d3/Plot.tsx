@@ -86,25 +86,22 @@ function draw(ref: HTMLDivElement | null, props: IBasicLineChartProps) {
       );
   });
 
-  return 1
+  return () => {
+    svg.remove();
+  };
 }
 
 export const PlotD3 = (props: IBasicLineChartProps) => {
-  
   const ref = useRef<HTMLDivElement>(null);
-
-  let plotFlag: number | null = null
 
   // this is
 
-  // useEffect = function calla
+  // useEffect = function call
   //   - passing a callback
   //     - return a cleanup
 
   useEffect(() => {
-    if (plotFlag === null) {
-      plotFlag = draw(ref.current, props);
-    }
+    return draw(ref.current, props);
   }, [props]);
 
   // This is rendering a new graph each time I "hot save"

@@ -13,11 +13,6 @@ export const MapView2D = (props: any) => {
     // 2D map view initialization
     let mapView: View | null = null;
 
-    // use searchparams for data filtering
-    //    let searchParams = new URLSearchParams(document.location.search)
-    // const [searchParams, _] = useSearchParams({Basemap: "imagery", Utilities: "", Widgets: "", Sliders: "", filters:""});
-
-
     useEffect(() => {
         if (mapView === null) {
             // initalize ArcGIS API
@@ -27,6 +22,6 @@ export const MapView2D = (props: any) => {
     }, [props.searchParams]); // dependency for re-rendeing - maybe a button to re-render the map? 
     
     // return ArcGIS map as div element
-    // setting h & w to screen is just filling container
-    return <div className='h-screen w-screen p-0 m-0' ref={containerRef}></div>;
+    // full works - so does screen
+    return <div className='h-full w-full p-0 m-0' ref={containerRef}></div>;
 }

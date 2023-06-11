@@ -25,5 +25,5 @@ export const MapView3D = () => {
 
     }, [searchParams]); // dependency for re-rendeing 
     
-    return <div className='h-screen w-screen p-0 m-0' ref={containerRef}></div>;
+    return <div className='h-full w-full p-0 m-0' ref={containerRef}></div>;
 }

@@ -43,11 +43,16 @@ export function initializeMap2D(ref: HTMLDivElement, searchParams: any) {
   // Setup Example CSV Database
   ************************************/
 
-  // TRY TO PROPERLY IMPLEMENT THIS EXAMPLE USING A FEATURE LAYER TABLE
-  // https://developers.arcgis.com/javascript/latest/sample-code/sandbox/?sample=highlight-features-by-geometry
-
-  // OR
-  //https://developers.arcgis.com/javascript/latest/sample-code/layers-scenelayerview-query-stats/
+  function setRenderer() {
+    return {
+      type: "simple",
+      symbol: {
+          type: "simple-marker",  // autocasts as new SimpleMarkerSymbol()
+          size: 4,
+          color: "white",
+        }
+      };
+    }
 
   const csvLayer = new CSVLayer({
     url: "https://ubatsukh.github.io/arcgis-js-api-demos/devsummit2021/csvLayer-nps/data/nps_establishments.csv",
@@ -70,17 +75,6 @@ export function initializeMap2D(ref: HTMLDivElement, searchParams: any) {
 
   function errorCallback(error: any) {
     console.log("error happened:", error.message);
-  }
-
-  function setRenderer() {
-    return {
-      type: "simple",
-      symbol: {
-          type: "simple-marker",  // autocasts as new SimpleMarkerSymbol()
-          size: 4,
-          color: "white",
-        }
-    };
   }
 
   /************************************ 
@@ -313,28 +307,6 @@ export function initializeMap2D(ref: HTMLDivElement, searchParams: any) {
       view.ui.add(legend, widgetLocation)
     }
   });
-
-  /************************************ 
-  // Customizable 2D
-  ************************************/
-
-  // Define the leading and/or trailing data layers before implementation
-
-  // // initialize widget configuration
-  // mapView.when(() => {    
-  //   // add list of layers widget with toggle option
-  //   const swipe = new Swipe({
-  //     leadingLayers: // Geophysics #1,
-  //     trailingLayers: // Geophysics#2
-  //     position: 35,
-  //     view: mapView // not avaliable in 3D
-  //   });
-
-  //   // toggle layerList widget to UI
-  //   if (widget[tools.indexOf('layers')]) {
-  //     mapView.ui.add(swipe)
-  //   } 
-  // });
 
   // return default 2D view
   return view
