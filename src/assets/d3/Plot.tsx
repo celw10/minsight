@@ -87,7 +87,7 @@ function draw(ref: HTMLDivElement | null, props: IBasicLineChartProps) {
   });
 
   return () => {
-    svg.remove();
+    d3.select(ref).select("svg").remove();
   };
 }
 

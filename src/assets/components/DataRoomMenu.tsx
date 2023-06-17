@@ -2,6 +2,7 @@
 import { Fragment } from 'react';
 // API import
 import { Disclosure, Menu, Transition  } from '@headlessui/react';
+// import { useSearchParams } from 'react-router-dom';
 
 // consolodate classname
 function classNames(...classes: any[]) {
@@ -108,7 +109,7 @@ export function DataRoomMenu(props: any) {
                                 }} 
 
                               // style button based on active
-                              className={classNames(String(new URLSearchParams(document.location.search)
+                              className={classNames(String(props.searchParams
                                                                        .get(props.type === "aside" ? "filters" : item.name))
                                                                        .includes(field) ? 'bg-gray-100' : '', 
                                                                        'w-full block px-4 py-2 text-sm text-gray-700')}

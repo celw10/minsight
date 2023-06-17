@@ -6,7 +6,7 @@ export const Analysis = () => {
 
     // return the 2D data room components /
     return (
-        <div className="h-max w-max">
+        <div className="h-96 w-screen">
             <PlotD3 top={10} right={50} bottom={50} left={50} width={800} height={400} fill="black" />
         </div>
     );

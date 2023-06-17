@@ -14,9 +14,9 @@ export const DataRoom3D = () => {
     return ( // I need to implement some features in 3D??
         <div className="h-screen w-screen">
             <div className="flex h-full flex-col"> 
-                <DataRoomMenu contents={toolList} type={'nav'} searchParams={searchParams} setSearchParams={setSearchParams}/>
+                <DataRoomMenu contents={toolList} type='nav' searchParams={searchParams} setSearchParams={setSearchParams}/>
                 <div className="flex h-full flex-row">
-                <DataRoomMenu contents={dataList} type={'aside'} searchParams={searchParams} setSearchParams={setSearchParams}/>
+                <DataRoomMenu contents={dataList} type='aside' searchParams={searchParams} setSearchParams={setSearchParams}/>
                         <MapView3D />
                 </div>
             </div>
