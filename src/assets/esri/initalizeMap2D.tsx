@@ -118,6 +118,12 @@ export function initializeMap2D(ref: HTMLDivElement, searchParams: any) {
   // flattened array of popup templates
   const popup = dataList.map(({popup}) => popup).flat()
 
+  // custom data symbology
+  const renderer = dataList.map(({renderer}) => renderer).flat()
+
+  // custom data labeling
+  const labels = dataList.map(({labels}) => labels).flat()
+
   // data rendering levels
   const zLevels = dataList.map(({zLevel}) => zLevel).flat()
 
@@ -135,7 +141,7 @@ export function initializeMap2D(ref: HTMLDivElement, searchParams: any) {
     }
   }
 
-  const govNLData = [... Array(featureLayers.length).keys()].map((id, index) => { 
+  const geoData = [... Array(featureLayers.length).keys()].map((id, index) => { 
     return{
       id: id, 
       dType: dType[index],
@@ -145,15 +151,19 @@ export function initializeMap2D(ref: HTMLDivElement, searchParams: any) {
       visible: visible[index], 
       popup: popup[index], 
       zLevel: zLevels[index],
+      renderer: renderer[index],
+      labels: labels[index],
     }
   });
 
   // allowed data types for feature layer and image layer imput
-  const allowedFeatureLayer = ["GIS", "Geology", "Geochemistry", "Drilling", "Mineralisation"]
-  // const allowedImageLayer = ["Geophysics"]
+  const defaultFeatureLayers = ["GIS", "Geology", "Geochemistry", "Drilling"]
+  const customFeatureLayers = ["Mineralisation"]
+  // const defaultImageLayer = ["Geophysics"] - nore sure how to implement raster data
   
-  // feature layers
-  const govFeatures = govNLData.filter( item => allowedFeatureLayer.includes(item.dType));
+  
+  // feature layers using default styling
+  const govFeatures = geoData.filter( item => defaultFeatureLayers.includes(item.dType));
   govFeatures.map(item => {
     const govFeaturesImport = new FeatureLayer({
       url: item.url + item.urlext,
@@ -162,25 +172,59 @@ export function initializeMap2D(ref: HTMLDivElement, searchParams: any) {
       popupTemplate: item.popup,
       labelsVisible: false,
       outFields: ['*'],
-      //Others?
+      // styling is default and labels are turned off
     });
     map.layers.add(govFeaturesImport, item.zLevel)
   });
 
-  // // image layers
-  // // IMPLEMENT WORK AROUND USING LOCAL STORAGE RASTER IMAGES? 
-  // const govImages = govNLData.filter( item => allowedImageLayer.includes(item.dType));
-  // govImages.map(img => {
-  //   const test = new MapImageLayer({
-  //     url: img.url + img.urlext,
-  //     // format: "tiff", // tiff?
-  //     // visible: img.visible,
-  //   });
-  //   map.add(test)
-  // })
-
-  // LOCALLY HOSTING DATA? 
-  // https://stackoverflow.com/questions/65875505/storing-features-layer-with-arcgis-or-as-geojson-locally-to-access-database-data
+  // mods feature layer with custom styling
+  const modsFeatures = geoData.filter( item => customFeatureLayers.includes(item.dType));
+  modsFeatures.map(item => {
+    const modsFeaturesImport = new FeatureLayer({
+      url: item.url + item.urlext,
+      renderer: item.renderer, // unique styling
+      labelingInfo: [item.labels], // unique labels
+      title: item.name,
+      visible: item.visible,
+      popupTemplate: item.popup,
+      outFields: ["DEPNAME","COMNAME","OREMIN"],
+    });
+    modsFeaturesImport.featureReduction = {
+      type: "cluster",
+      clusterMinSize: 16.5,
+      // defines the label within each cluster
+      labelingInfo: [
+        {
+          deconflictionStrategy: "none",
+          labelExpressionInfo: {
+            expression: "Text($feature.cluster_count, '#,###')"
+          },
+          symbol: {
+            type: "text",
+            color: "black",
+            font: {
+              family: "Noto Sans",
+              size: "12px"
+            }
+          },
+          labelPlacement: "center-center"
+        }
+      ],
+      // information to display when the user clicks a cluster
+      popupTemplate: {
+        title: "Cluster Summary",
+        content: "This cluster represents <b>{cluster_count}</b> features.",
+        fieldInfos: [{
+          fieldName: "cluster_count",
+          format: {
+            places: 0,
+            digitSeparator: true
+          }
+        }]
+      }
+    };
+    map.layers.add(modsFeaturesImport, item.zLevel)
+  })
 
   /************************************ 
   // Adding Graphics
@@ -207,10 +251,7 @@ export function initializeMap2D(ref: HTMLDivElement, searchParams: any) {
   });
 
   sketchViewModel.on("create", function(event: any) {
-    console.log("Create")
     if (event.state === "complete") {
-      console.log("Complete")
-      console.log(event.graphic.geometry)
       selectFeatures(event.graphic.geometry)
     }
   })
@@ -224,8 +265,8 @@ export function initializeMap2D(ref: HTMLDivElement, searchParams: any) {
       //create a query and ste geometry parameter to the polygon that was drawn
       const query: any = {
         geometry: geometry,
-        outfields: ["*"]
       };
+      console.log(csvLayerView.unit_name)
       // query graphics from the csv layer view
       csvLayerView.queryFeatures(query).then(function(results: any) {
         const graphics = results.features;
@@ -241,6 +282,7 @@ export function initializeMap2D(ref: HTMLDivElement, searchParams: any) {
 
         // highlight query results 
         highlight = csvLayerView.highlight(graphics);
+        console.log(results.unit_name)
       })
       .catch(errorCallback)
     }

@@ -41,10 +41,10 @@ const gazetted = {
     "title": "Notices Gazetted",
     "content": "<b>License Number: </b>{LICENSE_NBR}<br> <b>Available: </b>{ENDDATE}<br>"  
 };
-const tenure = {
-    "title": "Mineral Tenure",
-    "content": "<b>Company: </b>{COMPANY_NAME}<br> <b>Tenure Name: </b>{FEATURENAME}<br> <b>Mineral Tenure Type: </b>{TYPEDESC}<br>"  
-};
+// const tenure = {
+//     "title": "Mineral Tenure",
+//     "content": "<b>Company: </b>{COMPANY_NAME}<br> <b>Tenure Name: </b>{FEATURENAME}<br> <b>Mineral Tenure Type: </b>{TYPEDESC}<br>"  
+// };
 // geology
 const generalGeology = {
     "title": "Generalized Bedrock Geology",
@@ -93,41 +93,41 @@ const mods = {
  // Styling Government Data
 ************************************/
 
-// MODS feature layer styling - I'm going to have to style some of this data, unfortunately
-// But I don't want to style all of it, I'll have to implement a second filter funciton
-// const modsRender = {
-//     "type": "simple",
-//     symbol: {
-//         type: "simple-marker",
-//         size: 4,
-//         color: "white",
-//         outline: { 
-//           width: 0.4,
-//           color: "black"
-//         }
-//       }
-// };
+// MODS feature layer styling 
+// symbology
+const modsRender = {
+    "type": "simple",
+    symbol: {
+        type: "simple-marker",  // autocasts as new SimpleMarkerSymbol()
+        size: 4,
+        color: "white",
+        outline: {  // autocasts as new SimpleLineSymbol()
+            width: 0.4,
+            color: "black"
+        }
+        }
+};
 
-// //Label mineral occurrences
-// const modsLabels = {
-//     symbol: {
-//         type: "text",
-//         color: "black",
-//         haloColor: "white",
-//         haloSize: "2px",
-//         font: {
-//         size: "12px",
-//         family: "Noto Sans",
-//         style: "italic",
-//         weight: "normal"
-//         }
-//     },
+// labels
+const modsLabels = {
+    symbol: {
+      type: "text",
+      color: "black",
+      haloColor: "white",
+      haloSize: "2px",
+      font: {
+        size: "12px",
+        family: "Noto Sans",
+        style: "italic",
+        weight: "normal"
+      }
+    },
 
-//     labelPlacement: "above-center",
-//     labelExpressionInfo: {
-//         expression: "$feature.MODSLABEL" //Access a feature in the data to label
-//     }
-// };
+    labelPlacement: "above-center",
+    labelExpressionInfo: {
+      expression: "$feature.MODSLABEL" //Access a feature in the data to label
+    }
+};
 
 /************************************ 
  // Data Room Aside Menu
@@ -137,38 +137,37 @@ const mods = {
 // urlID and urlExt directly linked to GovNLDataLoc object and the datas location on the REST Server
 export const dataList = [
     // GIS data 
-    {id: 0, name: "GIS", fields: ["exploraiton claims", "histoircal claims", "cancelled claims", "avaliable claims", "mineral tenure"], 
-    urlID: [0, 0, 0, 0, 0], urlExt: ["0", "2", "3", "4", "5"], popup: [claims, claims, claims, gazetted, tenure],
-    zLevel: [4, 5, 6, 7, 8]},
-    // PROBLEM: Mineral doesn't load?
+    {id: 0, name: "GIS", fields: ["exploraiton claims", "histoircal claims", "cancelled claims", "avaliable claims"], 
+    urlID: [0, 0, 0, 0], urlExt: ["0", "2", "3", "4"], popup: [claims, claims, claims, gazetted],
+    renderer: ["", "", "", ""], labels: ["", "", "", ""], zLevel: [4, 5, 6, 7]},
+    // ISSUE: I removed mineral tenure, the layer won't load for some reason. https://dnrmaps.gov.nl.ca/arcgis/rest/services/GeoAtlas/Mineral_Lands/MapServer/5
     
     // Geological data
     {id: 1, name: "Geology", fields: ["detailed geology", "generalized geology"],
     urlID: [2, 2], urlExt: ["19", "23"], popup: [detailedGeology, generalGeology], 
-    zLevel: [0, 1]}, 
+    renderer: ["", ""], labels: ["", ""], zLevel: [0, 1]}, 
     // name: Geology (detailed) - Labrador detailed geology separated at urlext no. 16, nfld at urlext no. 19 - how to merge?
     
 
     // Geochemical data
     {id: 2, name: "Geochemistry", fields: ["rock", "till", "lake sediment", "stream sediment"], 
     urlID: [3, 3, 3, 3], urlExt: ["0", "4", "84", "296"], popup: [plutonicRockGeochem, tillGeochem, lakeSedGeochem, streamSedGeochem], 
-    zLevel: [9, 10, 11, 12]},
+    renderer: ["", "", "", ""], labels: ["", "", "", ""], zLevel: [9, 10, 11, 12]},
     // name: Geochemsitry (rock) - urlExt 1 (volcanic major) and 2 (volcanic minor) additionally avaliable
 
     // Geophysical data
     {id: 3, name: "Geophysics", fields: ["NL. Magnetics", "Lab. Magnetics"], 
     urlID: [5, 4], urlExt: ["157", "50"], popup: [geophysNL, geophysLab], 
-    zLevel: [2, 3]},
-    // RASTER FORMAT NOT SUPPORTED - geophysical data will have to be an imagery layer
-    // just importing two residual mag datasets in NL and Labrador, need more data types and data consolodation here
+    renderer: ["", ""], labels: ["", ""], zLevel: [2, 3]},
+    // ISSUE: How to import raster data?
 
     // Drilling data
     {id: 4, name: "Drilling", fields: ["drill collars"], urlID: [1], urlExt: ["2"], popup: [drillCollar], 
-    zLevel: [13]},
+    renderer: [""], labels: [""], zLevel: [13]},
 
     // Mineralisation data
-    {id: 5, name: "Mineralisation", fields: ["MODS Database"], urlID: [1], urlExt: ["3"], popup: [mods], 
-    zLevel: [14]},
+    {id: 5, name: "Mineralisation", fields: ["MODS Database"], urlID: [7], urlExt: ["0"], popup: [mods], 
+    renderer: [modsRender], labels: [modsLabels], zLevel: [14]},
     // PROBLEM: MODS layer doesn't load?
 ]
 
@@ -177,6 +176,7 @@ export const dataList = [
 ************************************/
 
 // base paths to GovNL Geoscience Atlas REST server data
+// note, I've hosted MODS on my own server, cannot get MODS & Tenure from Geoscience Atlas REST server data
 export const govNLDataLoc = [
     {id: 0, name: 'Mineral Lands', url: 'https://dnrmaps.gov.nl.ca/arcgis/rest/services/GeoAtlas/Mineral_Lands/MapServer/'},
     {id: 1, name: 'Map Layers', url: 'https://dnrmaps.gov.nl.ca/arcgis/rest/services/GeoAtlas/Map_Layers/MapServer/'},
@@ -185,5 +185,6 @@ export const govNLDataLoc = [
     {id: 4, name: 'Geophysics Lab.', url: 'https://dnrmaps.gov.nl.ca/arcgis/rest/services/GeoAtlas/Geophysics_Labrador/MapServer/'},
     {id: 5, name: 'Geophysics NL.', url: 'https://dnrmaps.gov.nl.ca/arcgis/rest/services/GeoAtlas/Geophysics_Newfoundland/MapServer/'},
     {id: 6, name: 'Indexes', url: 'https://dnrmaps.gov.nl.ca/arcgis/rest/services/GeoAtlas/Indexes/MapServer/'},
+    {id: 7, name: 'MODS', url: 'https://services1.arcgis.com/wQiXe755Yh4DaqZa/arcgis/rest/services/mods/FeatureServer/'}
 ]
 
